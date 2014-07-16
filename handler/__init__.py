@@ -7,6 +7,15 @@ import hashlib
 import tornado.web
 
 class BaseHandler(tornado.web.RequestHandler):
+    @property
+    def db(self):
+        return self.application.db
+
+    def format_time(self, t):
+        t = time.gmtime(t)
+        utc = time.strftime('%Y-%m-%dT%H:%M:%SZ', t)
+        return '<time datetime="%s"></time>' % utc
+
     def get_current_user(self):
         token = self.get_secure_cookie('token')
         user = self.application.db.users.find_one({'token': token})
@@ -16,8 +25,11 @@ class BaseHandler(tornado.web.RequestHandler):
             return None
         return user
 
+    def get_ua(self):
+        return self.request.headers.get("User-Agent", "bot")
+
     def get_source(self):
-        ua = self.request.headers.get("User-Agent", "bot")
+        ua = self.get_ua()
         sources = dict(
             iPhone = 'iPhone',
             iPad = 'iPad',
@@ -37,9 +49,8 @@ class BaseHandler(tornado.web.RequestHandler):
             return 'Nokia'
         return None
 
-    @property
-    def db(self):
-        return self.application.db
+    def get_lord(self):
+        return self.db.users.find_one({'role': 1})
 
     def get_user(self, name):
         user = self.db.users.find_one({'name_lower': name.lower()})
@@ -64,7 +75,3 @@ class BaseHandler(tornado.web.RequestHandler):
         url = self.get_avatar_img(user, size)
         return '<a href="/user/%s" class="avatar"><img src="%s" /></a>' % (user['name'], url)
 
-    def format_time(self, t):
-        t = time.gmtime(t)
-        utc = time.strftime('%Y-%m-%dT%H:%M:%SZ', t)
-        return '<time datetime="%s"></time>' % utc
