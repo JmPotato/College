@@ -1,4 +1,7 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-handlers = {}
+from handlers import account
+
+handlers = []
+handlers.extend(account.handlers)
