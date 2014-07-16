@@ -9,3 +9,4 @@ db = pymongo.Connection(host = settings.mongodb_host,
 
 db.users.create_index([('created', -1)])
 db.topics.create_index([('last_reply_time', -1)])
+db.notifications.create_index([('to', 1), ('created', 1)])

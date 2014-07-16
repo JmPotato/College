@@ -1,6 +1,7 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
+import re
 import time
 import hashlib
 
@@ -75,3 +76,22 @@ class BaseHandler(tornado.web.RequestHandler):
         url = self.get_avatar_img(user, size)
         return '<a href="/user/%s" class="avatar"><img src="%s" /></a>' % (user['name'], url)
 
+    def send_notification(self, content, topic_id):
+        if not isinstance(topic_id, ObjectId):
+            topic_id = ObjectId(topic_id)
+        user_name = self.get_current_user()['name_lower']
+        mention = re.compile('class="mention">@(\w+)')
+        for name in set(mention.findall(content)):
+            user = self.db.users.find_one({'name_lower': name.lower()})
+            if not user:
+                continue
+            if user_name == user['name_lower']:
+                continue
+            self.db.notifications.insert({
+                'topic': topic_id,
+                'from': user_name,
+                'to': user['name_lower'],
+                'content': content,
+                'read': False,
+                'created': time.time(),
+            })
