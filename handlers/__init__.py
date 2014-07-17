@@ -12,6 +12,26 @@ class BaseHandler(tornado.web.RequestHandler):
     def db(self):
         return self.application.db
 
+    @property
+    def messages(self):
+        if not hasattr(self, '_messages'):
+            messages = self.get_secure_cookie('saved_message')
+            self._messages = []
+            if messages:
+                self._messages = tornado.escape.json_decode(messages)
+        return self._messages
+
+    def send_message(self, message, type = 'danger'):
+        self.messages.append((type, message))
+        self.set_secure_cookie('saved_message',
+                               tornado.escape.json_encode(self.messages))
+
+    def get_message(self):
+        messages = self.messages
+        self._messages = []
+        self.clear_cookie('saved_message')
+        return messages
+
     def format_time(self, t):
         t = time.gmtime(t)
         utc = time.strftime('%Y-%m-%dT%H:%M:%SZ', t)
@@ -21,9 +41,10 @@ class BaseHandler(tornado.web.RequestHandler):
         token = self.get_secure_cookie('token')
         user = self.application.db.users.find_one({'token': token})
         if user and user['role'] < 0:
-            return False
-        if not user:
+            self.flash('你的帐号已被封禁')
+            self.clear_cookie('token')
             return None
+        print user
         return user
 
     def get_ua(self):
