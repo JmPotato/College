@@ -77,14 +77,24 @@ class BaseHandler(tornado.web.RequestHandler):
     def get_user(self, name):
         user = self.db.users.find_one({'name_lower': name.lower()})
         if not user:
-            return False
+            raise tornado.web.HTTPError(404)
         return user
 
     def get_topic(self, topic_id):
         topic = self.db.topics.find_one({'_id': ObjectId(topic_id)})
         if not topic:
-            return False
+            raise tornado.web.HTTPError(404)
         return topic
+
+    def get_node(self, node_name):
+        node_name = node_name.lower()
+        node = self.db.nodes.find_one({'name_lower': node_name})
+        if not node:
+            raise tornado.web.HTTPError(404)
+        return node
+
+    def get_page_num(self, count, per_page):
+        return int((count + per_page - 1) / per_page)
 
     def get_avatar_img(self, user, size = 48):
         hashed_email = hashlib.md5(user['email']).hexdigest()
