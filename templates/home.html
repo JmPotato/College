@@ -1,0 +1,30 @@
+{% extends 'layout.html' %}
+
+{% block title %}主页 | {% end %}
+
+{% block body %}
+<div class="row">
+    <div class="col-md-12">
+        <div class="box">
+            <header>
+                <center><h2>欢迎来到 College</h2></center>
+            </header>
+            <article>
+                <center>
+                    <h4>College 是一个前沿的学生社区</h4>
+                    <h4>我们期望能营造一个良好的讨论氛围</h4>
+                    <h4>大家能够多多分享自己正在做的有趣事物并交流想法，在这里找到志同道合的朋友</h4>
+                    <h4>在这一切的过程中，保持对他人的友善</h4>
+                    <hr>
+                    <h4>开启你的社区</h4>
+                    <div style="margin:30px;">
+                        <a class="btn btn-success" href="/account/signup">注册</a>
+                        <a class="btn btn-success" href="/account/signin" style="margin-left:50px;">登录</a>
+                    </div>
+                </center>
+            </article>
+            <footer>注：为了维护社区质量，初期我们选择不开放注册，请等待我们发放邀请码</footer>
+        </div>
+    </div>
+</div>
+{% end %}

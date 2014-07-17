@@ -3,6 +3,8 @@
 
 import re
 import time
+import random
+import string
 import hashlib
 
 import tornado.web
@@ -32,6 +34,19 @@ class BaseHandler(tornado.web.RequestHandler):
         self.clear_cookie('saved_message')
         return messages
 
+    def generate_invitation(self):
+        code = ''.join(random.sample(string.ascii_letters + string.digits, 8))
+        self.application.db.invitations.insert({
+            'code' : code,
+        })
+        return code
+
+    def check_invitation(self, invitation_code):
+        if not self.application.db.invitations.find_one({'code': invitation_code}):
+            return False
+        self.application.db.invitations.remove({'code': invitation_code})
+        return True
+
     def format_time(self, t):
         t = time.gmtime(t)
         utc = time.strftime('%Y-%m-%dT%H:%M:%SZ', t)
@@ -41,7 +56,7 @@ class BaseHandler(tornado.web.RequestHandler):
         token = self.get_secure_cookie('token')
         user = self.application.db.users.find_one({'token': token})
         if user and user['role'] < 0:
-            self.flash('你的帐号已被封禁')
+            self.send_message('你的帐号已被封禁')
             self.clear_cookie('token')
             return None
         print user

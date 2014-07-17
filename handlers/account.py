@@ -19,12 +19,15 @@ class SignupHandler(BaseHandler):
         self.render('account/signup.html')
 
     def post(self):
+        invitation = self.get_argument('invitation', None)
         username = self.get_argument('username', None)
         email = self.get_argument('email', None)
         password = self.get_argument('password', None)
         r_password = self.get_argument('r_password', None)
-        if not (username and email and password and r_password):
+        if not (invitation and username and email and password and r_password):
             self.send_message("请完整填写信息")
+        if not self.check_invitation(invitation):
+            self.send_message("请输入有效的邀请码")
         if password != r_password:
             self.send_message("两次输入的密码不匹配")
         if email and not email_validator.match(email):
@@ -37,6 +40,7 @@ class SignupHandler(BaseHandler):
             self.send_message('邮箱已被注册')
         if self.messages:
             self.render('account/signup.html')
+            return
         token = hashlib.sha1(password + username.lower()).hexdigest()
         role = 3
         if not self.db.users.count():

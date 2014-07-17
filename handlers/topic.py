@@ -9,6 +9,8 @@ from . import BaseHandler
 
 class TopicListHandler(BaseHandler):
     def get(self):
+        if not self.get_current_user():
+            self.render('home.html')
         topics = self.db.topics.find(sort=[('last_reply_time', -1)])
         topics_count = topics.count()
         p = int(self.get_argument('p', 1))
