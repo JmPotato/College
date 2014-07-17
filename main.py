@@ -30,7 +30,7 @@ class Application(tornado.web.Application):
             site_url = site_url,
             role = {3: 'Member',2: 'Admin',1: 'Lord'},
             cookie_secret = cookie_secret,
-            login_url = "/login",
+            login_url = "/account/signin",
             debug = Debug,
         )
         tornado.web.Application.__init__(self, urls.handlers, **settings)
