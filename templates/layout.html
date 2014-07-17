@@ -1,8 +1,8 @@
 <!DOCTYPE html>
 <html lang="zh-cn">
 <head>
-    {% if current_user %}
-    {% set noticount = handler.db.notifications.find({'to': current_user['name_lower'],'read': False}).count() %}
+    {% if handler.get_current_user() %}
+    {% set noticount = handler.db.notifications.find({'to': handler.get_current_user()['name_lower'],'read': False}).count() %}
     {% else %}
     {% set noticount = 0 %}
     {% end %}
@@ -18,18 +18,22 @@
 <div class="navbar navbar-inverse navbar-fixed-top">
     <div class="container">
         <div class="navbar-header">
-            <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
-                <span class="icon-bar"></span>
-                <span class="icon-bar"></span>
-                <span class="icon-bar"></span>
-            </button>
+            <a href="/" class="navbar-brand">{{ handler.settings['site_name'] }}</a>
         </div>
         <div class="navbar-collapse collapse">
             <ul class="nav navbar-nav">
-                <li><a href="/">首页</a></li>
+                <li><a href="/topic">主题</a></li>
+                <li><a href="">节点</a></li>
+                <li><a href="">成员</a></li>
             </ul>
             <ul class="nav navbar-nav navbar-right">
-
+                {% if not handler.get_current_user() %}
+                <li><a href="/account/signup">注册</a></li>
+                <li><a href="/account/signin">登录</a></li>
+                {% else %}
+                <li><a href="/topic/new">发表主题</a></li>
+                <li><a href="/account/signout?user={{ handler.get_current_user()['name'] }}">登出</a></li>
+                {% end %}
             </ul>
         </div>
     </div>
@@ -47,7 +51,32 @@
                 {% block content %}{% end %}
             </div>
             <div class="col-md-4">
+                {% if handler.get_current_user() %}
+                <div class="box" id="current_sidebar">
+                    <div id="current_base">
+                        {% raw handler.get_avatar(current_user) %}
+                        <p><a href="/member/{{ current_user['name'] }}" class="username">{{ current_user['name'] }}</a></p>
+                        {% if current_user['website'] %}
+                        <p><a href="{{ current_user['website'] }}" rel="nofollow">{{ current_user['website'] }}</a></p>
+                        {% end %}
+                    </div>
+                    <footer>
+                        <a href="/account/notifications">
+                            {{ handler.db.notifications.find({'to': current_user['name_lower'],'read': False}).count() }} 条未读通知
+                        </a>
+                    </footer>
+                </div>
+                {% end %}
                 {% block sidebar %}{% end %}
+                <div class="box">
+                    <header>站点统计</header>
+                    <ul>
+                        <li>成员数: {{ handler.db.users.count() }}</li>
+                        <li>节点数: {{ handler.db.nodes.count() }}</li>
+                        <li>主题数: {{ handler.db.topics.count() }}</li>
+                        <li>回复数: {{ handler.db.replies.count() }}</li>
+                    </ul>
+                </div>
             </div>
             <div class="col-md-12" id="footer">
                 Powered by <a href="https://github.com/JmPotato/College">College</a>

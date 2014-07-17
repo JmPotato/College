@@ -1,43 +1,113 @@
-body {    
-    background-color:#EEE;
+.reply-content,#notification_list .well,.list-content,#current_base p,.author_box p {
+	margin-left:61px;
+}
+a {
+	color:#08c;
+	text-decoration:none;
+}
+.avatar {
+	float:left;
+	margin-left:5px;
+	margin-right:8px;
+}
+.avatar img {
+	-webkit-border-radius:5px;
+	-moz-border-radius:5px;
+	border-radius:5px;
+	width:48px;
+	height:48px;
+}
+body {
+	background-color:#EEE;
 }
 #main {
-    margin-top:80px;
+	margin-top:80px;
 }
 .box {
-    background-color:white;
-    border-radius:3px;
-    margin-bottom:20px;
-    box-shadow:0px 0px 0px 1px #DDD;
-    overflow:hidden;
-    padding:14px;
-    border-bottom:2px solid #e2e2e9;
-    word-break:break-all;
+	background-color:white;
+	border-radius:3px;
+	margin-bottom:20px;
+	box-shadow:0px 0px 0px 1px #DDD;
+	overflow:hidden;
+	padding:14px;
+	border-bottom:2px solid #e2e2e9;
+	word-break:break-all;
 }
 .box header {
-    margin-bottom:20px;
-    padding-bottom:10px;
-    border-bottom:1px solid #DDD;
-    font-weight:bold;
-    font-size:20px;
+	margin-bottom:20px;
+	padding-bottom:10px;
+	border-bottom:1px solid #DDD;
+	font-weight:bold;
+	font-size:20px;
 }
 .box footer {
-    margin-top:10px;
-    padding-top:10px;
-    border-top:1px solid #DDD;
+	margin-top:10px;
+	padding-top:10px;
+	border-top:1px solid #DDD;
 }
 .box img {
-    max-width:100%;
+	max-width:100%;
+}
+.username {
+	font-weight:bold;
+	font-size:15px;
 }
 .list {
-    margin-bottom: 10px;
-    padding-bottom: 10px;
-    border-bottom: 1px solid #DDD;
+	margin-bottom:10px;
+	padding-bottom:10px;
+	border-bottom:1px solid #DDD;
 }
 #footer {
-    border-top: 1px solid #DDD;
-    margin-top: 20px;
-    padding-top: 10px;
-    padding-bottom: 10px;
-    text-align: center;
+	border-top:1px solid #DDD;
+	margin-top:20px;
+	padding-top:10px;
+	padding-bottom:10px;
+	text-align:center;
+}
+.reply-content,#notification_list .well,.list-content,#current_base p,.author_box p {
+	margin-left:61px;
+}
+#current_base {
+	min-height:48px
+}
+#current_sidebar a {
+	color:#000
+}
+#current_sidebar a:hover {
+	text-decoration:none;
+	color:#000
+}
+#current_info {
+	margin-top:10px;
+	text-align:center
+}
+#current_info td {
+	width:33%
+}
+#current_info .liked {
+	width:34%;
+	border-left:1px solid rgba(100,100,100,0.4);
+	border-right:1px solid rgba(100,100,100,0.4)
+}
+#current_info p {
+	margin-top:3px
+}
+#current_info span {
+	font-size:16px
+}
+#notification_list .right {
+	margin-top:8px;
+	font-weight:normal;
+	font-size:17px
+}
+#followed_list .avatar img {
+	width:24px;
+	height:24px
+}
+#footer {
+	border-top:1px solid #DDD;
+	margin-top:10px;
+	padding-top:10px;
+	padding-bottom:10px;
+	text-align:center
 }

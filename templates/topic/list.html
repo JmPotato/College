@@ -1,0 +1,34 @@
+{% extends '../layout.html' %}
+
+{% block title %}最近更新 | {% end %}
+
+{% block content %}
+<div class="box">
+    <header>主题</header>
+    {% for topic in topics %}
+        {% set author = handler.get_user(topic['author']) %}
+        <div class="list">
+            {% set reply_nums = handler.db.replies.find({'topic': str(topic['_id'])}).count() %}
+            {% set last_page = handler.get_page_num(reply_nums) %}
+            {% raw handler.get_avatar(author, 24) %}
+            <div class="list-content">
+                <p>
+                    <a href="/topic/{{ topic['_id'] }}?p={{ last_page }}">{{ topic['title'] }}</a>
+                    <a href="/topic/{{ topic['_id'] }}?p={{ last_page }}#reply{{ reply_nums }}" class="badge
+                    {% if handler.get_current_user() and handler.get_current_user()['name_lower'] not in topic.get('read', []) %}badge-success{%end%}
+                     pull-right">{{ reply_nums }}</a>
+                </p>
+                <p>
+                    由
+                    <a href="/member/{{ author['name'] }}">{{ author['name'] }}</a> 发表 |
+                    {% if 'last_reply_by' in topic %}
+                    由 <a href="/member/{{ topic['last_reply_by'] }}">{{ topic['last_reply_by'] }}</a>
+                    回复于 {% raw handler.format_time(topic['last_reply_time']) %} |
+                    {% end %}
+                    位于 <a href="/node/{{ topic['node'] }}">{{ handler.get_node(topic['node'])['title'] }}</a> 节点
+                </p>
+            </div>
+        </div>
+    {% end %}
+</div>
+{% end %}

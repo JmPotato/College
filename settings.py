@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 
 # Notic: site_url must ends with '/'
-site_name = 'site_name'
+site_name = 'College'
 site_url = 'http://xxx.com/'
 
 google_analytics = ''

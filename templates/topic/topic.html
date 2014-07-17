@@ -1,0 +1,22 @@
+{% extends '../layout.html' %}
+
+{% block title %}{{ topic['title'] }} | {% end %}
+
+{% block content %}
+<div class="box">
+    <header>
+        <h1>{{ topic['title'] }}</h1>
+    </header>
+    <article>
+        {% raw topic['content_html'] %}
+    </article>
+    <footer>
+        发表于 {% raw handler.format_time(topic['created']) %}
+        {% if topic['created'] != topic['modified'] %}
+        / 修改于 {% raw handler.format_time(topic['modified']) %}
+        {% end %}
+        {% if 'source' in topic %}
+        via {{ topic['source'] }}
+    </footer>
+</div>
+{% end %}
