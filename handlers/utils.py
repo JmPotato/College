@@ -7,7 +7,6 @@ from pygments import highlight
 from pygments.formatters import HtmlFormatter
 from pygments.lexers import get_lexer_by_name, TextLexer
 
-_CODE_RE = re.compile(r'```(\w+)(.+?)```', re.S)
 _MENTION_RE = re.compile(r'((?:^|\W)@\w+)')
 _FLOOR_RE = re.compile(r'((?:^|\W)#\d+)')
 _TOPIC_RE = re.compile(r'((?:^|\W)t[a-z0-9]{24})')
@@ -67,19 +66,7 @@ def make_content(text, extra_params='rel="nofollow"'):
             _id=%(topic_link)s>t%(topic_link_short)s</a>"""
         return t % data
 
-    def highligt(m):
-        try:
-            name = m.group(1)
-            lexer = get_lexer_by_name(name)
-        except ValueError:
-            lexer = TextLexer()
-        text = m.group(2).replace('&quot;', '"').replace('&amp;', '&')
-        text = text.replace('&lt;', '<').replace('&gt;', '>')
-        text = text.replace('&nbsp;', ' ')
-        return highlight(text, lexer, formatter)
-
     text = _unicode(xhtml_escape(text)).replace(' ', '&nbsp;')
-    text = _CODE_RE.sub(highligt, text).replace('\n', '<br />')
     text = _EMAIL_RE.sub(cover_email, text)
     text = _MENTION_RE.sub(convert_mention, text)
     text = _FLOOR_RE.sub(convert_floor, text)
