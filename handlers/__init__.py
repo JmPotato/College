@@ -57,7 +57,7 @@ class BaseHandler(tornado.web.RequestHandler):
         token = self.get_secure_cookie('token')
         user = self.application.db.users.find_one({'token': token})
         if user and user['role'] < 0:
-            self.send_message('你的帐号已被封禁')
+            self.send_message('你被关小黑屋了么么哒')
             self.clear_cookie('token')
             return None
         return user
@@ -88,6 +88,14 @@ class BaseHandler(tornado.web.RequestHandler):
 
     def get_lord(self):
         return self.db.users.find_one({'role': 1})
+
+    def check_role(self, role_min = 2, owner_name = '', return_bool = False):
+        user = self.current_user
+        if user and (user['name'] == owner_name or user['role'] >= role_min):
+            return True
+        if return_bool:
+            return False
+        raise tornado.web.HTTPError(403)
 
     def get_user(self, name):
         user = self.db.users.find_one({'name_lower': name.lower()})
