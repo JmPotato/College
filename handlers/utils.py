@@ -1,19 +1,11 @@
 import re
-import requests
-import settings
 
 from tornado.escape import xhtml_escape, _unicode, _URL_RE
-from pygments import highlight
-from pygments.formatters import HtmlFormatter
-from pygments.lexers import get_lexer_by_name, TextLexer
 
 _MENTION_RE = re.compile(r'((?:^|\W)@\w+)')
 _FLOOR_RE = re.compile(r'((?:^|\W)#\d+)')
 _TOPIC_RE = re.compile(r'((?:^|\W)t[a-z0-9]{24})')
 _EMAIL_RE = re.compile(r'([A-Za-z0-9-+.]+@[A-Za-z0-9-.]+)(\s|$)')
-
-formatter = HtmlFormatter()
-
 
 def make_content(text, extra_params='rel="nofollow"'):
     """https://github.com/facebook/tornado/blob/master/tornado/escape.py#L238
@@ -33,7 +25,7 @@ def make_content(text, extra_params='rel="nofollow"'):
 
         if '.' in href:
             name_extension = href.split('.')[-1].lower()
-            if name_extension in ('jpg', 'png', 'git', 'jpeg'):
+            if name_extension in ('jpg', 'png', 'gif', 'jpeg'):
                 return u'<img src="%s" />' % href
 
         return u'<a href="%s"%s>%s</a>' % (href, params, url)
@@ -66,7 +58,7 @@ def make_content(text, extra_params='rel="nofollow"'):
             _id=%(topic_link)s>t%(topic_link_short)s</a>"""
         return t % data
 
-    text = _unicode(xhtml_escape(text)).replace(' ', '&nbsp;')
+    text = _unicode(xhtml_escape(text)).replace('\n', '<br />')
     text = _EMAIL_RE.sub(cover_email, text)
     text = _MENTION_RE.sub(convert_mention, text)
     text = _FLOOR_RE.sub(convert_floor, text)
