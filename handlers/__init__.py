@@ -8,6 +8,7 @@ import string
 import hashlib
 
 import tornado.web
+from bson.objectid import ObjectId
 
 class BaseHandler(tornado.web.RequestHandler):
     @property
@@ -49,8 +50,8 @@ class BaseHandler(tornado.web.RequestHandler):
 
     def format_time(self, t):
         t = time.gmtime(t)
-        utc = time.strftime('%Y-%m-%dT%H:%M:%SZ', t)
-        return '<time datetime="%s"></time>' % utc
+        utc = time.strftime('%Y-%m-%d %H:%M:%S', t)
+        return utc
 
     def get_current_user(self):
         token = self.get_secure_cookie('token')
@@ -59,7 +60,6 @@ class BaseHandler(tornado.web.RequestHandler):
             self.send_message('你的帐号已被封禁')
             self.clear_cookie('token')
             return None
-        print user
         return user
 
     def get_ua(self):
@@ -125,7 +125,7 @@ class BaseHandler(tornado.web.RequestHandler):
     def send_notification(self, content, topic_id):
         if not isinstance(topic_id, ObjectId):
             topic_id = ObjectId(topic_id)
-        user_name = self.get_current_user()['name_lower']
+        user_name = self.current_user['name_lower']
         mention = re.compile('class="mention">@(\w+)')
         for name in set(mention.findall(content)):
             user = self.db.users.find_one({'name_lower': name.lower()})
