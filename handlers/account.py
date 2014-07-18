@@ -8,6 +8,7 @@ import hashlib
 import tornado.web
 
 from . import BaseHandler
+from bson.objectid import ObjectId
 
 username_validator = re.compile(r'^[a-zA-Z0-9]+$')
 email_validator = re.compile(r'^.+@[^.].*\.[a-z]{2,10}$', re.IGNORECASE)
@@ -25,15 +26,15 @@ class SignupHandler(BaseHandler):
         password = self.get_argument('password', None)
         r_password = self.get_argument('r_password', None)
         if not (invitation and username and email and password and r_password):
-            self.send_message("请完整填写信息")
+            self.send_message('请完整填写信息')
         if not self.check_invitation(invitation):
-            self.send_message("请输入有效的邀请码")
+            self.send_message('请输入有效的邀请码')
         if password != r_password:
-            self.send_message("两次输入的密码不匹配")
+            self.send_message('两次输入的密码不匹配')
         if email and not email_validator.match(email):
-            self.send_message("请输入有效的邮箱")
+            self.send_message('请输入有效的邮箱')
         if username and not username_validator.match(username):
-            self.send_message("请输入有效的用户名")
+            self.send_message('请输入有效的用户名')
         if username and self.db.users.find_one({'name_lower': username.lower()}):
             self.send_message('用户名已被注册')
         if email and self.db.users.find_one({'email': email}):
@@ -71,7 +72,7 @@ class SigninHandler(BaseHandler):
         username = self.get_argument('username', '').lower()
         password = self.get_argument('password', None)
         if not (username and password):
-            self.send_message("请完整填写信息")
+            self.send_message('请完整填写信息')
         token = hashlib.sha1(password + username.lower()).hexdigest()
         user = self.db.users.find_one({'name_lower': username, 'token': token})
         if not user:
