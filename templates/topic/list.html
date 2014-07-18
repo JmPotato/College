@@ -9,13 +9,13 @@
         {% set author = handler.get_user(topic['author']) %}
         <div class="list">
             {% set reply_nums = handler.db.replies.find({'topic': str(topic['_id'])}).count() %}
-            {% set last_page = handler.get_page_num(reply_nums) %}
-            {% raw handler.get_avatar(author, 24) %}
+            {% set last_page = handler.get_page_num(reply_nums, 20) %}
+            {% raw handler.get_avatar(author) %}
             <div class="list-content">
                 <p>
                     <a href="/topic/{{ topic['_id'] }}?p={{ last_page }}">{{ topic['title'] }}</a>
                     <a href="/topic/{{ topic['_id'] }}?p={{ last_page }}#reply{{ reply_nums }}" class="badge
-                    {% if handler.get_current_user() and handler.get_current_user()['name_lower'] not in topic.get('read', []) %}badge-success{%end%}
+                    {% if current_user and current_user['name_lower'] not in topic.get('read', []) %}badge-success{%end%}
                      pull-right">{{ reply_nums }}</a>
                 </p>
                 <p>
@@ -31,4 +31,23 @@
         </div>
     {% end %}
 </div>
+{% end %}
+
+{% block sidebar %}
+{% if current_user %}
+<div class="box" id="current_sidebar">
+    <div id="current_base">
+        {% raw handler.get_avatar(current_user) %}
+        <p><a href="/member/{{ current_user['name'] }}" class="username">{{ current_user['name'] }}</a></p>
+        {% if current_user['website'] %}
+        <p><a href="{{ current_user['website'] }}" rel="nofollow">{{ current_user['website'] }}</a></p>
+        {% end %}
+    </div>
+    <footer>
+        <a href="/account/notifications">
+            {{ handler.db.notifications.find({'to': current_user['name_lower'],'read': False}).count() }} 条未读通知
+        </a>
+    </footer>
+</div>
+{% end %}
 {% end %}

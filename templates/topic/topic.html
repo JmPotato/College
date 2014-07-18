@@ -5,18 +5,27 @@
 {% block content %}
 <div class="box">
     <header>
-        <h1>{{ topic['title'] }}</h1>
+        {{ topic['title'] }}
     </header>
     <article>
         {% raw topic['content_html'] %}
     </article>
     <footer>
         发表于 {% raw handler.format_time(topic['created']) %}
-        {% if topic['created'] != topic['modified'] %}
-        / 修改于 {% raw handler.format_time(topic['modified']) %}
-        {% end %}
         {% if 'source' in topic %}
         via {{ topic['source'] }}
+        {% end %}
     </footer>
+</div>
+{% end %}
+
+{% block sidebar %}
+<div class="box author_box">
+    <header>作者</header>
+    {% raw handler.get_avatar(handler.get_user(topic['author'])) %}
+    <p><a href="/member/{{ current_user['name'] }}" class="username">{{ current_user['name'] }}</a></p>
+    {% if current_user['website'] %}
+    <p><a href="{{ current_user['website'] }}" rel="nofollow">{{ current_user['website'] }}</a></p>
+    {% end %}
 </div>
 {% end %}
