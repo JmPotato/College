@@ -100,6 +100,10 @@ body {
 	font-weight:normal;
 	font-size:17px
 }
+.floor {
+    position:relative;
+    top:-55px
+}
 #followed_list .avatar img {
 	width:24px;
 	height:24px

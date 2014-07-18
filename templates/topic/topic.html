@@ -2,6 +2,26 @@
 
 {% block title %}{{ topic['title'] }} | {% end %}
 
+{% block head %}
+<script>
+function Mention(username, floor) {
+    replyContent = $("#reply_content");
+	oldContent = replyContent.val();
+	prefix = "回复" + floor + "楼 @" + username + " ";
+	newContent = '';
+	if(oldContent.length > 0){
+	    if (oldContent != prefix) {
+	        newContent = oldContent + "\n" + prefix;
+	    }
+	} else {
+	    newContent = prefix
+	}
+	replyContent.focus();
+	replyContent.val(newContent);
+}
+</script>
+{% end %}
+
 {% block content %}
 <div class="box">
     <header>
@@ -15,8 +35,75 @@
         {% if 'source' in topic %}
         via {{ topic['source'] }}
         {% end %}
+        {% if current_user %}
+        <div class="pull-right">
+            {% if handler.check_role(owner_name=topic['author'], return_bool=True) %}
+            <a href="/topic/{{ topic['_id'] }}/append">补充内容</a>
+            {% end %}
+            {% if handler.check_role(return_bool=True) %}
+            <a href="/topic/{{ topic['_id'] }}/move">移动主题</a>
+            {% end %}
+        </div>
+        {% end %}
     </footer>
 </div>
+{% if replies_count %}
+<div class="box">
+    <header>回复</header>
+    {% set replies_per_page = 20 %}
+    {% set base_url = "/topic/%s" % topic['_id'] %}
+    {% for reply in replies[(p-1)*replies_per_page:p*replies_per_page] %}
+    {% set author = handler.get_user(reply['author']) %}
+    <div class="list" name="reply{{ reply['index'] }}" id="reply{{ reply['index'] }}">
+        {% raw handler.get_avatar(author) %}
+        <p>
+            {% if current_user %}
+            {% set username = author['name'] %}
+            {% set floor_number = reply['index'] %}
+            <div class="pull-right">
+                <a onclick="Mention('{{ username }}', '{{ floor_number }}')" class="reply">@</a>
+            </div>
+            {% end %}
+            <a href="/member/{{ author['name'] }}" class="reply_user">{{ author['name'] }}</a>
+            回复于 {% raw handler.format_time(reply['created']) %}
+            #{{ reply['index'] }}
+            {% if 'source' in reply %}
+            via {{ reply['source'] }}
+            {% end %}
+        </p>
+        <div class="reply-content">{% raw reply['content_html'] %}</div>
+    </div>
+    {% end %}
+    <ul class="pager">
+    {% if p > 1 %}
+    <li class="previous">
+        <a href="{{ base_url }}?p={{p-1}}">&lt;&lt; 上一页</a>
+    </li>
+    {% end %}
+    {% if p*20 < replies_count %}
+    <li class="next">
+        <a href="{{ base_url }}?p={{p+1}}">下一页 &gt;&gt;</a>
+    </li>
+    {% end %}
+    </ul>
+</div>
+{% end %}
+
+{% if current_user %}
+{% if handler.check_role(role_min = 1, return_bool = True) %}
+<div class="box">
+    <form action="/topic/{{ topic['_id'] }}/reply" method="post">
+        {% raw xsrf_form_html() %}
+        <div class="form-group">
+            <textarea class="form-control" rows="5" id="reply_content" name="content" required></textarea>
+        </div>
+        <div class="form-group">
+            <button type="submit" class="btn btn-primary">回复</button>
+        </div>
+    </form>
+</div>
+{% end %}
+{% end %}
 {% end %}
 
 {% block sidebar %}
@@ -29,3 +116,4 @@
     {% end %}
 </div>
 {% end %}
+
