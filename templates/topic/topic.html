@@ -7,7 +7,7 @@
 function Mention(username, floor) {
     replyContent = $("#reply_content");
 	oldContent = replyContent.val();
-	prefix = "回复" + floor + "楼 @" + username + " ";
+	prefix = "回复#" + floor + " @" + username + " ";
 	newContent = '';
 	if(oldContent.length > 0){
 	    if (oldContent != prefix) {
@@ -47,6 +47,17 @@ function Mention(username, floor) {
         {% end %}
     </footer>
 </div>
+{% if topic['appended_content'] %}
+<div class="box subtle">
+    <header>有 {{ len(topic['appended_content']) }} 条附言</header>
+    {% for content in topic['appended_content'] %}
+        <div class="list">
+            <article>{{ content }}</article>
+        </div>
+    {% end %}
+    最后补充于 {% raw handler.format_time(topic['appended']) %}
+</div>
+{% end %}
 {% if replies_count %}
 <div class="box">
     <header>回复</header>

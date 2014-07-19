@@ -95,6 +95,7 @@ class CreateHandler(BaseHandler):
             'node': node,
             'created': time_now,
             'appended': time_now,
+            'appended_content': [],
             'last_reply_time': time_now,
             'index': 0,
         }
@@ -154,11 +155,23 @@ class ReplyHandler(BaseHandler):
 class AppendHandler(BaseHandler):
     @tornado.web.authenticated
     def get(self, topic_id):
-        pass
+        self.render('topic/append.html')
 
     @tornado.web.authenticated
-    def post(self):
-        pass
+    def post(self, topic_id):
+        content = self.get_argument('content', None)
+        if not content:
+            self.send_message('请完整填写信息喵')
+        appended_content = self.db.topics.find_one({'_id': ObjectId(topic_id)})['appended_content']
+        if make_content(content) in appended_content:
+            self.send_message('不要发布重复内容！')
+            self.redirect('/topic/%s' % topic_id)
+            return
+        appended_content.append(make_content(content))
+        self.db.topics.update({'_id': ObjectId(topic_id)},
+                              {'$set': {'appended': time.time(),
+                                        'appended_content': appended_content}})
+        self.redirect('/topic/%s' % topic_id)
 
 class MoveHandler(BaseHandler):
     @tornado.web.authenticated

@@ -21,7 +21,7 @@ body {
 	background-color:#EEE;
 }
 #main {
-	margin-top:80px;
+	margin-top:40px;
 }
 .box {
 	background-color:white;
@@ -38,7 +38,9 @@ body {
 	padding-bottom:10px;
 	border-bottom:1px solid #DDD;
 	font-weight:bold;
-	font-size:20px;
+	font-size:22.5px;
+}
+.box article {
 }
 .box footer {
 	margin-top:10px;
@@ -48,9 +50,45 @@ body {
 .box img {
 	max-width:100%;
 }
+.node {
+    display:inline-block;
+    line-height:20px;
+    color:#fff;
+    font-weight:bold;
+    padding:1px 4px;
+    background-color:#BFBFBF;
+    -webkit-border-radius:3px;
+    -moz-border-radius:3px;
+    border-radius:3px;
+    font-size:15px
+}
+.node a {
+    color:#000
+}
+.node a:hover {
+    text-decoration:none;
+    color:#000
+}
+.node:hover {
+    color:#fff
+}
+#topic_node {
+    width:150px
+}
+#content {
+    margin-top:10px;
+    width:98%
+}
 .username {
-	font-weight:bold;
-	font-size:15px;
+    font-weight:bold;
+    font-size:15px
+}
+.username a {
+    color:#000
+}
+.username a:hover {
+    text-decoration:none;
+    color:#000
 }
 .list {
 	margin-bottom:10px;
@@ -114,4 +152,11 @@ body {
 	padding-top:10px;
 	padding-bottom:10px;
 	text-align:center
+}
+.subtle {
+    background-color: #fffff9;
+    border-left: 3px solid #fffbc1;
+    padding: 10px;
+    text-align: left;
+    border-bottom: 1px solid #e2e2e2;
 }

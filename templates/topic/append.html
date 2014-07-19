@@ -1,0 +1,32 @@
+{% extends '../layout.html' %}
+
+{% block title %}补充主题 | {% end %}
+
+{% block content %}
+<div class="box">
+    <header>补充内容</header>
+    <form class="form-horizontal" role="form" method="post" action="#">
+        <fieldset>
+        {% raw xsrf_form_html() %}
+            <div class="form-group">
+                <div class="col-md-12">
+                    <textarea class="form-control" rows="10" id="content" name="content" required></textarea>
+                </div>
+            </div>
+            <div class="form-group">
+                <div class="col-sm-10">
+                    <button type="submit" class="btn btn-primary">发布</button>
+                </div>
+            </div>
+        </fieldset>
+    </form>
+</div>
+<div class="box">
+    <header>关于补充内容</header>
+    <article>
+        <p>在 College，我们奉行一条守则：</p>
+        <ul><li>“三思而后行，说话要走心”</li></ul>
+        <p>每个人都应该为他说的话负责，说出去的话犹如泼出去的水，所以我们不提供删除和编辑功能。但我们提供补充说明的功能，以便你更好的解释自己的信息。</p>
+    </article>
+</div>
+{% end %}
