@@ -1,11 +1,11 @@
 {% extends '../layout.html' %}
 
-{% block title %}{{ node['title'] }} | {% end %}
+{% block title %}所有主题 | {{ member['name'] }} | {% end %}
 
 {% block content %}
 <div class="box">
     <header>主题</header>
-    {% for topic in topics[(p-1)*10:p*10] %}
+    {% for topic in topics %}
         {% set author = handler.get_user(topic['author']) %}
         <div class="list">
             {% set reply_nums = handler.db.replies.find({'topic': str(topic['_id'])}).count() %}
@@ -30,7 +30,7 @@
             </div>
         </div>
     {% end %}
-    {% set base_url="/topic" %}
+    {% set base_url = "/member/%s/topics" % member['name'] %}
     <ul class="pager">
     {% if p > 1 %}
     <li class="previous">
@@ -44,15 +44,4 @@
     {% end %}
     </ul>
 </div>
-{% end %}
-
-{% block sidebar %}
-{% if handler.check_role(return_bool=True) %}
-<div class="box">
-    <header>仪表盘</header>
-    <a href="/node/{{ node['name'] }}/edit" class="btn btn-primary">编辑节点</a>
-    <a href="/node/add" class="btn btn-warning">添加节点</a>
-    <a href="/node/{{ node['name'] }}/remove" class="btn btn-danger">删除节点</a>
-</div>
-{% end %}
 {% end %}

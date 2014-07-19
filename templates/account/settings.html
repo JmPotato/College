@@ -1,0 +1,78 @@
+{% extends '../layout.html' %}
+
+{% block title %}个人设置 | {% end %}
+
+{% block content %}
+<div class="box">
+    <header>设置</header>
+    <form class="form-horizontal" role="form" method="post" action="#">
+        <fieldset>
+        {% raw xsrf_form_html() %}
+            <div class="form-group">
+                <label for="username" class="col-sm-2 control-label">用户名</label>
+                <div class="col-sm-8">
+                    <input type="text" class="form-control" id="username" name="username" value="{{ current_user['name'] }}" disabled>
+                </div>
+            </div>
+            <div class="form-group">
+                <label for="email" class="col-sm-2 control-label">邮箱</label>
+                <div class="col-sm-8">
+                    <input type="email" class="form-control" id="email" name="email" value="{{ current_user['email'] }}" disabled>
+                </div>
+            </div>
+            <div class="form-group">
+                <label for="website" class="col-sm-2 control-label">网站</label>
+                <div class="col-sm-8">
+                    <input type="text" class="form-control" id="website" name="website" value="{{ current_user['website'] }}">
+                </div>
+            </div>
+            <div class="form-group">
+                <label for="description" class="col-sm-2 control-label">简介</label>
+                <div class="col-sm-8">
+                    <textarea class="form-control" id="description" name="description" rows="10">{{ current_user['description'] }}</textarea>
+                </div>
+            </div>
+            <div class="form-group">
+                <div class="col-sm-offset-2 col-sm-10">
+                    <button type="submit" class="btn btn-primary">提交</button>
+                </div>
+            </div>
+        </fieldset>
+    </form>
+</div>
+{% end %}
+
+{% block sidebar %}
+<div class="box">
+    <header>头像</header>
+    <article>
+        <a href="http://cn.gravatar.com">去 Gravatar 更换头像</a>
+        <p>注册时请使用你在 College 注册时使用的头像</p>
+    </article>
+</div>
+<div class="box">
+    <header>密码</header>
+    <form class="form-horizontal" role="form" method="post" action="/account/password">
+        <fieldset>
+        {% raw xsrf_form_html() %}
+            <div class="form-group">
+                <label for="old_password" class="col-sm-3 control-label">旧密码</label>
+                <div class="col-sm-8">
+                    <input type="password" class="form-control" id="old_password" name="old_password">
+                </div>
+            </div>
+            <div class="form-group">
+                <label for="new_password" class="col-sm-3 control-label">新密码</label>
+                <div class="col-sm-8">
+                    <input type="password" class="form-control" id="new_password" name="new_password">
+                </div>
+            </div>
+            <div class="form-group">
+                <div class="col-sm-offset-3 col-sm-10">
+                    <button type="submit" class="btn btn-primary">修改</button>
+                </div>
+            </div>
+        </fieldset>
+    </form>
+</div>
+{% end %}

@@ -1,0 +1,132 @@
+{% extends '../layout.html' %}
+
+{% block title %}{{ member['name'] }} | {% end %}
+
+{% block content %}
+<div class="box">
+    <div id="profile_main">
+        {% raw handler.get_avatar(member, size=72) %}
+        {% if member['role'] == -1 %}
+        <span class="label label-danger pull-right">小黑屋</span>
+        {% elif member['role'] > 1 %}
+        <span class="label label-danger pull-right">{{ _(handler.settings['role'][member['role']]) }}</span>
+        {% end %}
+        <p class="username">{{ member['name'] }}</p>
+        <p>加入于 {% raw handler.format_time(member['created']) %}</p>
+    </div>
+    {% if member['description'] %}
+    <footer>
+        <p>{% raw escape(member['description']).replace('\n','<br />') %}</p>
+    </footer>
+    {% end %}
+</div>
+
+{% if topics.count() %}
+<div class="box">
+    <header>他的主题</header>
+    {% for topic in topics %}
+        {% set author = handler.get_user(topic['author']) %}
+        <div class="list">
+            {% set reply_nums = handler.db.replies.find({'topic': str(topic['_id'])}).count() %}
+            {% set last_page = handler.get_page_num(reply_nums, 20) %}
+            {% raw handler.get_avatar(author) %}
+            <div class="list-content">
+                <p>
+                    <a href="/topic/{{ topic['_id'] }}?p={{ last_page }}">{{ topic['title'] }}</a>
+                    <a href="/topic/{{ topic['_id'] }}?p={{ last_page }}#reply{{ reply_nums }}" class="badge
+                    {% if current_user and current_user['name_lower'] not in topic.get('read', []) %}badge-success{%end%}
+                     pull-right">{{ reply_nums }}</a>
+                </p>
+                <p>
+                    由
+                    <a href="/member/{{ author['name'] }}">{{ author['name'] }}</a> 发表 |
+                    {% if 'last_reply_by' in topic %}
+                    由 <a href="/member/{{ topic['last_reply_by'] }}">{{ topic['last_reply_by'] }}</a>
+                    回复于 {% raw handler.format_time(topic['last_reply_time']) %} |
+                    {% end %}
+                    位于 <a href="/node/{{ topic['node'] }}">{{ handler.get_node(topic['node'])['title'] }}</a> 节点
+                </p>
+            </div>
+        </div>
+    {% end %}
+    <a href="/member/{{ member['name'] }}/topics">更多 >></a>
+</div>
+{% end %}
+
+{% if liked_topics %}
+<div class="box">
+    <header>他的最爱</header>
+    {% for topic in liked_topics %}
+        {% set author = handler.get_user(topic['author']) %}
+        <div class="list">
+            {% set reply_nums = handler.db.replies.find({'topic': str(topic['_id'])}).count() %}
+            {% set last_page = handler.get_page_num(reply_nums, 20) %}
+            {% raw handler.get_avatar(author) %}
+            <div class="list-content">
+                <p>
+                    <a href="/topic/{{ topic['_id'] }}?p={{ last_page }}">{{ topic['title'] }}</a>
+                    <a href="/topic/{{ topic['_id'] }}?p={{ last_page }}#reply{{ reply_nums }}" class="badge
+                    {% if current_user and current_user['name_lower'] not in topic.get('read', []) %}badge-success{%end%}
+                     pull-right">{{ reply_nums }}</a>
+                </p>
+                <p>
+                    由
+                    <a href="/member/{{ author['name'] }}">{{ author['name'] }}</a> 发表 |
+                    {% if 'last_reply_by' in topic %}
+                    由 <a href="/member/{{ topic['last_reply_by'] }}">{{ topic['last_reply_by'] }}</a>
+                    回复于 {% raw handler.format_time(topic['last_reply_time']) %} |
+                    {% end %}
+                    位于 <a href="/node/{{ topic['node'] }}">{{ handler.get_node(topic['node'])['title'] }}</a> 节点
+                </p>
+            </div>
+        </div>
+    {% end %}
+</div>
+{% end %}
+
+{% if replies.count() %}
+<div class="box">
+    <header>他的回复</header>
+    <table class="table table-striped">
+        <tbody>
+        {% for reply in replies %}
+        <tr>
+            <td>
+                <a href="/topic/{{ reply['topic'] }}">{% raw reply['content_html'] %}</a>
+            </td>
+        </tr>
+        {% end %}
+        </tbody>
+    </table>
+</div>
+{% end %}
+
+{% end %}
+
+{% block sidebar %}
+{% if current_user and current_user['role'] > member['role'] %}
+<div class="box">
+    <header>操作</header>
+    {% if handler.check_role(return_bool=True) %}
+        <form method="post" action="/member/{{ member['name'] }}/role">
+            <div class="form-group">
+                <select class="form-control" name="role" id="role">
+                    {% if member['role'] > -1 %}
+                    <option value="-1">小黑屋</option>
+                    {% end %}
+                    {% for role in range(1,current_user['role']) %}
+                    {% if role != member['role'] and role < current_user['role'] and role in handler.settings['role'] %}
+                    <option value="{{ role }}">{{ _(handler.settings['role'][role]) }}</option>
+                    {% end %}
+                    {% end %}
+                </select>
+            </div>
+            {% raw xsrf_form_html() %}
+            <div class="form-group">
+                <button type="submit" class="btn btn-primary">更新</button>
+            </div>
+        </form>
+    {% end %}
+</div>
+{% end %}
+{% end %}

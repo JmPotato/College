@@ -38,7 +38,7 @@ body {
 	padding-bottom:10px;
 	border-bottom:1px solid #DDD;
 	font-weight:bold;
-	font-size:22.5px;
+	font-size:20px;
 }
 .box article {
 }
@@ -152,4 +152,18 @@ body {
     padding: 10px;
     text-align: left;
     border-bottom: 1px solid #e2e2e2;
+}
+#members-list .avatar {
+    margin-bottom:5px
+}
+#profile_main {
+    height:72px;
+    font-size:15px
+}
+#profile_main .avatar img {
+    width:72px;
+    height:72px
+}
+#profile_main .username {
+    font-size:20px
 }

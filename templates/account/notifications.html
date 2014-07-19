@@ -1,0 +1,47 @@
+{% extends '../layout.html' %}
+
+{% block title %}通知 | {% end %}
+
+{% block content %}
+<div class="box" id="notification_list">
+    <header>
+        通知
+            <div class="pull-right">
+                共 {{ notis_count }} 条
+                <a href="/account/notifications/clear" class="label label-danger">清空</a>
+            </div>
+    </header>
+    {% for noti in notis %}
+    <div class="list">
+        {% set user = handler.get_user(noti['from']) %}
+        {% raw handler.get_avatar(user) %}
+        <p>
+            <a href="/member/{{ user['name'] }}">{{ user['name'] }}</a>
+            在
+            {% set topic = handler.get_topic(noti['topic']) %}
+            <a href="/topic/{{ topic['_id'] }}">{{ topic['title'] }}</a>
+            中提到了你
+            {% if not noti['read'] %}
+            <span class="label label-success">未读</span>
+            {% set tmp = handler.db.notifications.update({'_id':noti['_id']},{'$set':{'read':True}}) %}
+            {% end %}
+            <a href="/account/notifications/{{ noti['_id'] }}/remove?next={{ url_escape(request.uri) }}" class="label label-danger">删除</a>
+        </p>
+        <div class="well">{% raw noti['content'] %}</div>
+    </div>
+    {% end %}
+    {% set base_url = "/account/notifications" %}
+    <ul class="pager">
+    {% if p > 1 %}
+    <li class="previous">
+        <a href="{{ base_url }}?p={{p-1}}">&lt;&lt; 上一页</a>
+    </li>
+    {% end %}
+    {% if p*20 < notis_count %}
+    <li class="next">
+        <a href="{{ base_url }}?p={{p+1}}">下一页 &gt;&gt;</a>
+    </li>
+    {% end %}
+    </ul>
+</div>
+{% end %}

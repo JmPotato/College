@@ -128,7 +128,7 @@ class BaseHandler(tornado.web.RequestHandler):
     def get_avatar(self, user, size = 48):
         size *= 2
         url = self.get_avatar_img(user, size)
-        return '<a href="/user/%s" class="avatar"><img src="%s" /></a>' % (user['name'], url)
+        return '<a href="/member/%s" class="avatar"><img src="%s" /></a>' % (user['name'], url)
 
     def send_notification(self, content, topic_id):
         if not isinstance(topic_id, ObjectId):

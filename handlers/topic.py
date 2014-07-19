@@ -173,14 +173,32 @@ class AppendHandler(BaseHandler):
                                         'appended_content': appended_content}})
         self.redirect('/topic/%s' % topic_id)
 
+class RemoveHandler(BaseHandler):
+    @tornado.web.authenticated
+    def get(self, topic_id):
+        self.check_role()
+        topic_id = ObjectId(topic_id)
+        self.db.topics.remove({'_id': topic_id})
+        self.db.replies.remove({'topic': topic_id})
+        self.db.notifications.remove({'topic': ObjectId(topic_id)})
+        self.send_message('就这样......它们走了', type='success')
+        self.redirect('/')
+        return
+
 class MoveHandler(BaseHandler):
     @tornado.web.authenticated
     def get(self, topic_id):
-        pass
+        topic = self.get_topic(topic_id)
+        self.render('topic/move.html', topic=topic)
 
     @tornado.web.authenticated
-    def post(self):
-        pass
+    def post(self, topic_id):
+        node_name = self.get_argument('to_node', '')
+        node = self.get_node(node_name.lower())
+        self.db.topics.update({'_id': ObjectId(topic_id)},
+                              {'$set': {'node': node['name']}})
+        self.send_message('搬家成功！', type='success')
+        self.redirect('/topic/%s' % topic_id)
 
 handlers = [
     (r'/', TopicListHandler),
@@ -190,4 +208,5 @@ handlers = [
     (r'/topic/(\w+)/reply', ReplyHandler),
     (r'/topic/(\w+)/move', MoveHandler),
     (r'/topic/(\w+)/append', AppendHandler),
+    (r'/topic/(\w+)/remove', RemoveHandler),
 ]

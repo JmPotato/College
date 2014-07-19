@@ -1,0 +1,31 @@
+{% extends '../layout.html' %}
+
+{% block title %}所有成员 | {% end %}
+
+{% block nav %}
+<li><a href="/topic">主题</a></li>
+<li><a href="/node">节点</a></li>
+<li class="active"><a href="/member">成员</a></li>
+{% end %}
+
+{% block content %}
+<div class="box" id="members-list">
+    <header>所有成员</header>
+    {% for member in members %}
+    {% raw handler.get_avatar(member) %}
+    {% end %}
+    {% set base_url = "/member" %}
+    <ul class="pager">
+    {% if p > 1 %}
+    <li class="previous">
+        <a href="{{ base_url }}?p={{p-1}}">&lt;&lt; 上一页</a>
+    </li>
+    {% end %}
+    {% if p*20 < count %}
+    <li class="next">
+        <a href="{{ base_url }}?p={{p+1}}">下一页 &gt;&gt;</a>
+    </li>
+    {% end %}
+    </ul>
+</div>
+{% end %}

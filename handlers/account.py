@@ -90,21 +90,61 @@ class SignoutHandler(BaseHandler):
 class SettingsHandler(BaseHandler):
     @tornado.web.authenticated
     def get(self):
-        pass
+        self.render('account/settings.html')
 
     @tornado.web.authenticated
     def post(self):
-        pass
+        website = self.get_argument('website', '')
+        description = self.get_argument('description', '')
+        if len(description) > 1500:
+            self.send_message('你这是要写自传的节奏嘛，简介太长了！')
+        self.db.users.update({'_id': self.current_user['_id']}, {'$set': {
+            'website': website,
+            'description': description,
+        }})
+        self.send_message('修改成功', type='success')
+        self.redirect('/account/settings')
+
+
+class ChangePasswordHandler(BaseHandler):
+    @tornado.web.authenticated
+    def post(self):
+        old_password = self.get_argument('old_password', None)
+        new_password = self.get_argument('new_password', None)
+        if not (old_password and new_password):
+            self.send_message('请完整填写信息喵')
+        key = old_password + self.current_user['name'].lower()
+        password = hashlib.sha1(key).hexdigest()
+        if password != self.current_user['token']:
+            self.send_message('密码错误！')
+        if self.messages:
+            self.redirect('/account/settings')
+            return
+        key = new_password + self.current_user['name'].lower()
+        token = str(hashlib.sha1(key).hexdigest())
+        self.db.users.update({'_id': self.current_user['_id']},
+                               {'$set': {'token': token}})
+        self.set_secure_cookie('token', token, expires_days=30)
+        self.send_message('修改成功', type='success')
+        self.redirect('/account/settings')
 
 class NotificationsHandler(BaseHandler):
     @tornado.web.authenticated
     def get(self):
-        pass
+        p = int(self.get_argument('p', 1))
+        notis = self.db.notifications.find({
+            'to': self.current_user['name_lower']
+        }, sort=[('created', -1)])
+        notis_count = notis.count()
+        per_page = 20
+        notis = notis[(p - 1) * per_page:p * per_page]
+        self.render('account/notifications.html', notis=notis,
+                    notis_count=notis_count, p=p)
 
 class NotificationsClearHandler(BaseHandler):
     @tornado.web.authenticated
     def get(self):
-        self.db.notifications.remove({'to': self.get_current_user()['name_lower']})
+        self.db.notifications.remove({'to': self.current_user['name_lower']})
         self.redirect('/')
 
 class NotificationsRemoveHandler(BaseHandler):
@@ -118,6 +158,7 @@ handlers = [
     (r'/account/signin', SigninHandler),
     (r'/account/signout', SignoutHandler),
     (r'/account/settings', SettingsHandler),
+    (r'/account/password', ChangePasswordHandler),
     (r'/account/notifications', NotificationsHandler),
     (r'/account/notifications/clear', NotificationsClearHandler),
     (r'/account/notifications/(\w+)/remove', NotificationsRemoveHandler),
