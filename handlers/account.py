@@ -2,6 +2,7 @@
 # -*- coding: utf-8 -*-
 
 import re
+import os
 import time
 import hashlib
 
@@ -49,6 +50,8 @@ class SignupHandler(BaseHandler):
         self.db.users.insert({
             'name': username,
             'name_lower': username.lower(),
+            'avatar_url': '',
+            'avatar_name': '',
             'token': token,
             'email': email,
             'website': '',
@@ -105,6 +108,25 @@ class SettingsHandler(BaseHandler):
         self.send_message('修改成功', type='success')
         self.redirect('/account/settings')
 
+class ChangeAvatarHandler(BaseHandler):
+    @tornado.web.authenticated
+    def post(self):
+        try:
+            file_metas = self.request.files['avatar_file'][0]
+        except:
+            self.send_message('头像半路走丢了，再试一次吧')
+            self.render('account/settings.html')
+            return
+        with open(file_metas['filename'], 'w') as f:
+            f.write(file_metas['body'])
+        if not self.upload_avatar(self.current_user, file_metas['filename'], file_metas['filename']):
+            os.remove(file_metas['filename'])
+            self.send_message('头像上传失败')
+            self.render('account/settings.html')
+            return
+        os.remove(file_metas['filename'])
+        self.send_message('头像更换成功', type='success')
+        self.redirect('/account/settings')
 
 class ChangePasswordHandler(BaseHandler):
     @tornado.web.authenticated
@@ -153,11 +175,19 @@ class NotificationsRemoveHandler(BaseHandler):
         self.db.notifications.remove({'_id': ObjectId(id)})
         self.redirect(self.get_argument('next', '/account/notifications'))
 
+class CodeHandler(BaseHandler):
+    def get(self):
+        self.check_role()
+        code = self.generate_invitation()
+        self.write(code)
+
 handlers = [
+    (r'/invite/code', CodeHandler),
     (r'/account/signup', SignupHandler),
     (r'/account/signin', SigninHandler),
     (r'/account/signout', SignoutHandler),
     (r'/account/settings', SettingsHandler),
+    (r'/account/avatar', ChangeAvatarHandler),
     (r'/account/password', ChangePasswordHandler),
     (r'/account/notifications', NotificationsHandler),
     (r'/account/notifications/clear', NotificationsClearHandler),

@@ -5,7 +5,7 @@
 {% block content %}
 <div class="box">
     <div id="profile_main">
-        {% raw handler.get_avatar(member, size=72) %}
+        {% raw handler.get_avatar(member) %}
         {% if member['role'] == -1 %}
         <span class="label label-danger pull-right">小黑屋</span>
         {% elif member['role'] > 1 %}

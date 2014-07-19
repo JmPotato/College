@@ -7,8 +7,21 @@ import random
 import string
 import hashlib
 
+import qiniu.io
+import qiniu.rs
+import qiniu.rsf
+import qiniu.conf
 import tornado.web
 from bson.objectid import ObjectId
+
+#Use Qiniu to store avatars
+qiniu.conf.ACCESS_KEY = ""
+qiniu.conf.SECRET_KEY = ""
+
+bucket_name = ''
+
+policy = qiniu.rs.PutPolicy(bucket_name)
+uptoken = policy.token()
 
 class BaseHandler(tornado.web.RequestHandler):
     @property
@@ -119,15 +132,31 @@ class BaseHandler(tornado.web.RequestHandler):
     def get_page_num(self, count, per_page):
         return int((count + per_page - 1) / per_page)
 
-    def get_avatar_img(self, user, size = 48):
-        hashed_email = hashlib.md5(user['email']).hexdigest()
-        url = 'http://cn.gravatar.com/avatar/' + hashed_email
-        url += '?s=%s' % size
+    def upload_avatar(self, user, img, file_name):
+        file = "%s.%s" % (user['name_lower'], file_name.lower().split('.')[-1:][0])
+        rets, err = qiniu.rsf.Client().list_prefix(bucket_name)
+        for i in rets['items']:
+            if file == i['key']:
+                ret, err = qiniu.rs.Client().delete(bucket_name, file)
+                break
+        ret, err = qiniu.io.put_file(uptoken, file, img)
+        if err is not None:
+            print err
+            return False
+        self.db.users.update({'_id': self.current_user['_id']},
+                             {'$set': {'avatar_name': file}})
+        self.db.users.update({'name_lower': user['name_lower']},
+                               {'$set': {'avatar_url': self.get_avatar_img(user)}})
+        return True
+
+    def get_avatar_img(self, user):
+        if not user['avatar_url']:
+            return 'https://ruby-china.org/avatar'
+        url = qiniu.rs.make_base_url(bucket_name + '.qiniudn.com', user['avatar_name'])
         return url
 
-    def get_avatar(self, user, size = 48):
-        size *= 2
-        url = self.get_avatar_img(user, size)
+    def get_avatar(self, user):
+        url = self.get_avatar_img(user)
         return '<a href="/member/%s" class="avatar"><img src="%s" /></a>' % (user['name'], url)
 
     def send_notification(self, content, topic_id):
