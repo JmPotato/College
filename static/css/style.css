@@ -72,13 +72,6 @@ body {
 .node:hover {
     color:#fff
 }
-#topic_node {
-    width:150px
-}
-#content {
-    margin-top:10px;
-    width:98%
-}
 .username {
     font-weight:bold;
     font-size:15px

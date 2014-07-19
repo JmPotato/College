@@ -1,12 +1,6 @@
 {% extends '../layout.html' %}
 
-{% block title %}最近更新 | {% end %}
-
-{% block nav %}
-<li class="active"><a href="/topic">主题</a></li>
-<li><a href="/node">节点</a></li>
-<li><a href="/member">成员</a></li>
-{% end %}
+{% block title %}{{ node['title'] }} | {% end %}
 
 {% block content %}
 <div class="box">
@@ -53,20 +47,12 @@
 {% end %}
 
 {% block sidebar %}
-{% if current_user %}
-<div class="box" id="current_sidebar">
-    <div id="current_base">
-        {% raw handler.get_avatar(current_user) %}
-        <p><a href="/member/{{ current_user['name'] }}" class="username">{{ current_user['name'] }}</a></p>
-        {% if current_user['website'] %}
-        <p><a href="{{ current_user['website'] }}" rel="nofollow">{{ current_user['website'] }}</a></p>
-        {% end %}
-    </div>
-    <footer>
-        <a href="/account/notifications">
-            {{ handler.db.notifications.find({'to': current_user['name_lower'],'read': False}).count() }} 条未读通知
-        </a>
-    </footer>
+{% if handler.check_role(return_bool=True) %}
+<div class="box">
+    <header>{{ _("Dashboard") }}</header>
+    <a href="/node/{{ node['name'] }}/edit" class="btn btn-primary">编辑节点</a>
+    <a href="/node/add" class="btn btn-warning">添加节点</a>
+    <a href="/node/{{ node['name'] }}/remove" class="btn btn-danger">删除节点</a>
 </div>
 {% end %}
 {% end %}
