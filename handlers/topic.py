@@ -24,6 +24,7 @@ class TopicListHandler(BaseHandler):
         )
 
 class TopicHandler(BaseHandler):
+    @tornado.web.authenticated
     def get(self, topic_id):
         topic = self.get_topic(topic_id)
         if self.current_user:

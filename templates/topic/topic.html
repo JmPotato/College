@@ -123,8 +123,8 @@ function Mention(username, floor) {
     <header>作者</header>
     {% raw handler.get_avatar(handler.get_user(topic['author'])) %}
     <p><a href="/member/{{ topic['author'] }}" class="username">{{ topic['author'] }}</a></p>
-    {% if current_user['website'] %}
-    <p><a href="{{ current_user['website'] }}" rel="nofollow">{{ current_user['website'] }}</a></p>
+    {% if handler.get_user(topic['author'])['website'] %}
+    <p><a href="{{ handler.get_user(topic['author'])['website'] }}" rel="nofollow">{{ handler.get_user(topic['author'])['website'] }}</a></p>
     {% end %}
 </div>
 {% end %}
