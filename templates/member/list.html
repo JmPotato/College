@@ -15,13 +15,15 @@
     {% raw handler.get_avatar(member) %}
     {% end %}
     {% set base_url = "/member" %}
+</div>
+<div>
     <ul class="pager">
     {% if p > 1 %}
     <li class="previous">
         <a href="{{ base_url }}?p={{p-1}}">&lt;&lt; 上一页</a>
     </li>
     {% end %}
-    {% if p*20 < count %}
+    {% if p*22 < count %}
     <li class="next">
         <a href="{{ base_url }}?p={{p+1}}">下一页 &gt;&gt;</a>
     </li>

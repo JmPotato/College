@@ -7,7 +7,7 @@ from . import BaseHandler
 
 class MemberListHandler(BaseHandler):
     def get(self):
-        per_page = 20
+        per_page = 22
         members = self.db.users.find(sort=[('created', -1)])
         count = members.count()
         p = int(self.get_argument('p', 1))

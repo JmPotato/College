@@ -67,6 +67,7 @@ class EditHandler(BaseHandler):
         node_name = self.get_argument('node_name', None)
         node_title = self.get_argument('node_title', None)
         description = self.get_argument('description', '')
+        html = self.get_argument('html', '')
         if not node_name:
             self.send_message('请完整填写信息喵')
         if node_name != node['name'] and self.db.nodes.find_one({'name_lower': node_name.lower()}):
@@ -82,6 +83,7 @@ class EditHandler(BaseHandler):
         node['name_lower'] = node_name.lower()
         node['title'] = node_title
         node['description'] = description
+        node['html'] = html
         self.db.nodes.save(node)
 
         self.send_message('修改成功！', type='success')
