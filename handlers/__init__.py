@@ -3,6 +3,8 @@
 
 import re
 import time
+import random
+import string
 import hashlib
 
 import qiniu.io
@@ -116,6 +118,15 @@ class BaseHandler(tornado.web.RequestHandler):
 
     def get_page_num(self, count, per_page):
         return int((count + per_page - 1) / per_page)
+
+    def upload_img(self, img, file_name):
+        code = ''.join(random.sample(string.ascii_letters + string.digits, 5))
+        file = "img-%s.%s" % (code, file_name.lower().split('.')[-1:][0])
+        ret, err = qiniu.io.put_file(uptoken, file, img)
+        if err is not None:
+            print err
+            return False
+        return qiniu.rs.make_base_url(bucket_name + '.qiniudn.com', file)
 
     def upload_avatar(self, user, img, file_name):
         file = "%s.%s" % (user['name_lower'], file_name.lower().split('.')[-1:][0])
