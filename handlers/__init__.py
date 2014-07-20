@@ -3,6 +3,7 @@
 
 import re
 import time
+import hashlib
 
 import qiniu.io
 import qiniu.rs
@@ -135,7 +136,8 @@ class BaseHandler(tornado.web.RequestHandler):
 
     def get_avatar_img(self, user):
         if not user['avatar_url']:
-            return 'https://ruby-china.org/avatar'
+            hashed_email = hashlib.md5(user['email']).hexdigest()
+            return 'http://cn.gravatar.com/avatar/%s?size=98' % hashed_email
         url = qiniu.rs.make_base_url(bucket_name + '.qiniudn.com', user['avatar_name'])
         return url
 
