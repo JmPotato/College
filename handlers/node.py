@@ -31,6 +31,7 @@ class AddHandler(BaseHandler):
         node_name = self.get_argument('node_name', None)
         node_title = self.get_argument('node_title', None)
         description = self.get_argument('description', '')
+        html = self.get_argument('html', '')
         if not node_title:
             node_title = node_name
         if not (node_title and node_name):
@@ -47,6 +48,7 @@ class AddHandler(BaseHandler):
             'name_lower': node_name.lower(),
             'title': node_title,
             'description': description,
+            'html': html,
         })
         self.redirect(self.get_argument('next', '/node/' + node_name))
 
