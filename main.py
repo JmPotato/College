@@ -28,6 +28,7 @@ class Application(tornado.web.Application):
             autoescape = None,
             site_name = site_name,
             site_url = site_url,
+            google_analytics = google_analytics.lstrip(),
             role = {1: 'Member',2: 'Admin',3: 'Lord'},
             cookie_secret = cookie_secret,
             login_url = "/account/signin",
