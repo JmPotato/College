@@ -2,7 +2,6 @@
 # -*- coding: utf-8 -*-
 
 import re
-import os
 import time
 import hashlib
 
@@ -21,12 +20,11 @@ class SignupHandler(BaseHandler):
         self.render('account/signup.html')
 
     def post(self):
-        invitation = self.get_argument('invitation', None)
         username = self.get_argument('username', None)
         email = self.get_argument('email', None)
         password = self.get_argument('password', None)
         r_password = self.get_argument('r_password', None)
-        if not (invitation and username and email and password and r_password):
+        if not (username and email and password and r_password):
             self.send_message('请完整填写信息喵')
         if password != r_password:
             self.send_message('两次输入的密码都不一样，你脑子瓦特了？')
@@ -38,8 +36,6 @@ class SignupHandler(BaseHandler):
             self.send_message('真不巧，你的用户名被人抢先了')
         if email and self.db.users.find_one({'email': email}):
             self.send_message('邮箱已被注册')
-        if not self.check_invitation(invitation):
-            self.send_message('请输入有效的邀请码，别想蒙混过关~')
         if self.messages:
             self.render('account/signup.html')
             return

@@ -3,9 +3,6 @@
 
 import re
 import time
-import random
-import string
-import hashlib
 
 import qiniu.io
 import qiniu.rs
@@ -47,19 +44,6 @@ class BaseHandler(tornado.web.RequestHandler):
         self._messages = []
         self.clear_cookie('saved_message')
         return messages
-
-    def generate_invitation(self):
-        code = ''.join(random.sample(string.ascii_letters + string.digits, 8))
-        self.application.db.invitations.insert({
-            'code' : code,
-        })
-        return code
-
-    def check_invitation(self, invitation_code):
-        if not self.application.db.invitations.find_one({'code': invitation_code}):
-            return False
-        self.application.db.invitations.remove({'code': invitation_code})
-        return True
 
     def format_time(self, t):
         t = time.localtime(t)
