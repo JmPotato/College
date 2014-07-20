@@ -1,6 +1,7 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
+import os
 import re
 import time
 import random
@@ -22,6 +23,9 @@ bucket_name = ''
 
 policy = qiniu.rs.PutPolicy(bucket_name)
 uptoken = policy.token()
+
+os.environ['TZ'] = 'Asia/Shanghai'
+time.tzset()
 
 class BaseHandler(tornado.web.RequestHandler):
     @property
