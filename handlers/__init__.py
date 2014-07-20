@@ -62,7 +62,7 @@ class BaseHandler(tornado.web.RequestHandler):
         return True
 
     def format_time(self, t):
-        t = time.gmtime(t)
+        t = time.localtime(t)
         utc = time.strftime('%Y-%m-%d %H:%M:%S', t)
         return utc
 
