@@ -11,7 +11,7 @@ import tornado.web
 from . import BaseHandler
 from bson.objectid import ObjectId
 
-username_validator = re.compile(r'^[a-zA-Z0-9]+$')
+username_validator = re.compile(r'^([a-zA-Z])([a-zA-Z0-9_.]){0,9}$')
 email_validator = re.compile(r'^.+@[^.].*\.[a-z]{2,10}$', re.IGNORECASE)
 
 class SignupHandler(BaseHandler):
