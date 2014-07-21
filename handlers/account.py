@@ -113,6 +113,10 @@ class ChangeAvatarHandler(BaseHandler):
             self.send_message('头像半路走丢了，再试一次吧')
             self.render('account/settings.html')
             return
+        if file_metas['filename'].lower().split('.')[-1:][0] == 'gif':
+            self.send_message('妈蛋上传这种头像是想闪瞎我们么（掀桌')
+            self.render('account/settings.html')
+            return
         with open(file_metas['filename'], 'w') as f:
             f.write(file_metas['body'])
         if not self.upload_avatar(self.current_user, file_metas['filename'], file_metas['filename']):

@@ -21,9 +21,6 @@ qiniu.conf.SECRET_KEY = ""
 
 bucket_name = ''
 
-policy = qiniu.rs.PutPolicy(bucket_name)
-uptoken = policy.token()
-
 os.environ['TZ'] = 'Asia/Shanghai'
 time.tzset()
 
@@ -139,7 +136,9 @@ class BaseHandler(tornado.web.RequestHandler):
         return int((count + per_page - 1) / per_page)
 
     def upload_img(self, img, file_name):
-        code = ''.join(random.sample(string.ascii_letters + string.digits, 5))
+        policy = qiniu.rs.PutPolicy(bucket_name)
+        uptoken = policy.token()
+        code = ''.join(random.sample(string.ascii_letters + string.digits, 20))
         file = "img-%s.%s" % (code, file_name.lower().split('.')[-1:][0])
         ret, err = qiniu.io.put_file(uptoken, file, img)
         if err is not None:
@@ -148,6 +147,8 @@ class BaseHandler(tornado.web.RequestHandler):
         return qiniu.rs.make_base_url(bucket_name + '.qiniudn.com', file)
 
     def upload_avatar(self, user, img, file_name):
+        policy = qiniu.rs.PutPolicy(bucket_name)
+        uptoken = policy.token()
         file = "%s.%s" % (user['name_lower'], file_name.lower().split('.')[-1:][0])
         rets, err = qiniu.rsf.Client().list_prefix(bucket_name)
         for i in rets['items']:
