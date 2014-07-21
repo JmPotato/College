@@ -9,7 +9,7 @@
         {% if member['role'] == -1 %}
         <span class="label label-danger pull-right">小黑屋</span>
         {% elif member['role'] > 1 %}
-        <span class="label label-danger pull-right">{{ _(handler.settings['role'][member['role']]) }}</span>
+        <span class="label label-danger pull-right">{{ handler.settings['role'][member['role']] }}</span>
         {% end %}
         <p class="username">{{ member['name'] }}</p>
         <p>加入于 {% raw handler.format_time(member['created']) %}</p>

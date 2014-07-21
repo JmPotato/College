@@ -58,7 +58,7 @@ class ChangeRoleHandler(BaseHandler):
 
 handlers = [
     (r'/member', MemberListHandler),
-    (r'/member/(\w+)', MemberPageHandler),
-    (r'/member/(\w+)/topics', MemberTopicsHandler),
-    (r'/member/(\w+)/role', ChangeRoleHandler),
+    (r'/member/(\w.+)', MemberPageHandler),
+    (r'/member/(\w.+)/topics', MemberTopicsHandler),
+    (r'/member/(\w.+)/role', ChangeRoleHandler),
 ]
