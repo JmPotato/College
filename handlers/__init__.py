@@ -160,12 +160,10 @@ class BaseHandler(tornado.web.RequestHandler):
             return False
         self.db.users.update({'_id': self.current_user['_id']},
                              {'$set': {'avatar_name': file}})
-        self.db.users.update({'name_lower': user['name_lower']},
-                               {'$set': {'avatar_url': self.get_avatar_img(user)}})
         return True
 
     def get_avatar_img(self, user):
-        if not user['avatar_url']:
+        if not user['avatar_name']:
             hashed_email = hashlib.md5(user['email']).hexdigest()
             return 'http://cn.gravatar.com/avatar/%s?size=98' % hashed_email
         url = qiniu.rs.make_base_url(bucket_name + '.qiniudn.com', user['avatar_name'])

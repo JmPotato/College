@@ -47,7 +47,6 @@ class SignupHandler(BaseHandler):
         self.db.users.insert({
             'name': username,
             'name_lower': username.lower(),
-            'avatar_url': '',
             'avatar_name': '',
             'token': token,
             'email': email,
