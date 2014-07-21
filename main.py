@@ -31,6 +31,7 @@ class Application(tornado.web.Application):
             google_analytics = google_analytics.lstrip(),
             role = {1: 'Member',2: 'Admin',3: 'Lord'},
             cookie_secret = cookie_secret,
+            xsrf_cookies = True,
             login_url = "/account/signin",
             debug = Debug,
         )
