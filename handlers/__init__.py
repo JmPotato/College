@@ -11,15 +11,9 @@ import hashlib
 import qiniu.io
 import qiniu.rs
 import qiniu.rsf
-import qiniu.conf
 import tornado.web
 from bson.objectid import ObjectId
-
-#Use Qiniu to store avatars
-qiniu.conf.ACCESS_KEY = ""
-qiniu.conf.SECRET_KEY = ""
-
-bucket_name = ''
+from settings import qiniu_bucket_name as bucket_name
 
 os.environ['TZ'] = 'Asia/Shanghai'
 time.tzset()

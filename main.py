@@ -22,6 +22,13 @@ define('port', default=8888, help='run on the given port', type=int)
 
 class Application(tornado.web.Application):
     def __init__(self):
+
+        import qiniu.conf
+
+        #Use Qiniu to store avatars
+        qiniu.conf.ACCESS_KEY = qiniu_access_key
+        qiniu.conf.SECRET_KEY = qiniu_secret_key
+
         settings = dict(
             static_path = os.path.join(os.path.dirname(__file__), "static"),
             template_path = os.path.join(os.path.dirname(__file__), "templates"),
