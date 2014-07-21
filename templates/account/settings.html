@@ -45,6 +45,16 @@
 {% block sidebar %}
 <div class="box">
     <header>头像</header>
+    <form class="form-horizontal" role="form" method="post" action="/account/avatar/remove">
+        <fieldset>
+        {% raw xsrf_form_html() %}
+            <div class="form-group">
+                <div class="col-sm-12">
+                    <button type="submit" class="btn btn-primary">移除现有头像</button>
+                </div>
+            </div>
+        </fieldset>
+    </form>
     <form class="form-horizontal" enctype="multipart/form-data" role="form" method="post" action="/account/avatar">
         <fieldset>
         {% raw xsrf_form_html() %}
@@ -61,7 +71,7 @@
             </div>
         </fieldset>
     </form>
-    <p>你也可以选择去 <a href="http://cn.gravatar.com">Gravatar</a> 更换头像（注册时请使用你在 College 的注册邮箱）</p>
+    <p>你也可以选择去 <a href="http://cn.gravatar.com">Gravatar</a> 更换头像（注册时请使用你在 College 的注册邮箱，如果你在 College 已经上传了头像请先移除现有头像）</p>
 </div>
 <div class="box">
     <header>密码</header>

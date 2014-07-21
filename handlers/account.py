@@ -128,6 +128,18 @@ class ChangeAvatarHandler(BaseHandler):
         self.send_message('头像更换成功', type='success')
         self.redirect('/account/settings')
 
+class RemoveAvatarHandler(BaseHandler):
+    @tornado.web.authenticated
+    def post(self):
+        if not self.current_user['avatar_name']:
+            self.send_message('你在 College 根本没有头像嘛，浪费感情')
+            self.render('account/settings.html')
+            return
+        self.db.users.update({'_id': self.current_user['_id']},
+                             {'$set': {'avatar_name': ''}})
+        self.send_message('头像移除成功', type='success')
+        self.redirect('/account/settings')
+
 class ChangePasswordHandler(BaseHandler):
     @tornado.web.authenticated
     def post(self):
@@ -207,6 +219,7 @@ handlers = [
     (r'/account/signout', SignoutHandler),
     (r'/account/settings', SettingsHandler),
     (r'/account/avatar', ChangeAvatarHandler),
+    (r'/account/avatar/remove', RemoveAvatarHandler),
     (r'/account/password', ChangePasswordHandler),
     (r'/account/notifications', NotificationsHandler),
     (r'/account/notifications/clear', NotificationsClearHandler),
