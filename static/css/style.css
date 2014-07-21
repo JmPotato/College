@@ -1,6 +1,16 @@
 .reply-content,#notification_list .well,.list-content,#current_base p,.author_box p {
 	margin-left:61px;
 }
+.reply-author {
+	display: inline;
+}
+.reply-time {
+	display: inline;
+	color: gray;
+}
+.reply-index {
+	display: inline;
+}
 a {
 	color:#08c;
 	text-decoration:none;
