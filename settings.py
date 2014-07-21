@@ -6,7 +6,7 @@ site_name = 'College'
 site_url = 'http://xxx.com/'
 
 google_analytics = ''
-cookie_secret = 'RESET ME!!!!'
+cookie_secret = 'catcatcat'
 
 # MongoDB Settings
 mongodb_host = '127.0.0.1'

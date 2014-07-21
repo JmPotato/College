@@ -72,14 +72,14 @@ function Mention(username, floor) {
             {% set username = author['name'] %}
             {% set floor_number = reply['index'] %}
             <div class="pull-right">
-                <a onclick="Mention('{{ username }}', '{{ floor_number }}')" class="reply">@</a>
+                <a onclick="Mention('{{ username }}', '{{ floor_number }}')" href="#reply_content" class="reply">@</a>
+                <span class="reply-index">#{{ reply['index'] }}</span>
             </div>
             {% end %}
-            <a href="/member/{{ author['name'] }}" class="reply_user">{{ author['name'] }}</a>
-            回复于 {% raw handler.format_time(reply['created']) %}
-            #{{ reply['index'] }}
+            <a class="reply-author" href="/member/{{ author['name'] }}" class="reply_user">{{ author['name'] }}</a>
+            | {% raw handler.format_time(reply['created']) %}
             {% if 'source' in reply %}
-            via {{ reply['source'] }}
+            | via {{ reply['source'] }}
             {% end %}
         </p>
         <div class="reply-content">{% raw reply['content_html'] %}</div>
