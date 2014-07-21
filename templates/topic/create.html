@@ -9,14 +9,16 @@
         <fieldset>
         {% raw xsrf_form_html() %}
             <div class="form-group">
-                <div class="col-xs-2">
+                <div class="col-md-12">
                     <select class="form-control" id="topic_node" name="node">
                         {% for node in handler.db.nodes.find() %}
                         <option value="{{ node['name'] }}"{% if node['name'] == node_name %} selected{% end %}> {{ node['title'] }}</option>
                         {% end %}
                     </select>
                 </div>
-                <div class="col-xs-10">
+            </div>
+            <div class="form-group">
+                <div class="col-md-12">
                     <input type="text" class="form-control" id="title" name="title" placeholder="标题" maxlength="100" required>
                 </div>
             </div>
