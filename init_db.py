@@ -1,11 +1,15 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
+import motor
 import pymongo
 import settings
 
 db = pymongo.Connection(host = settings.mongodb_host,
                         port = settings.mongodb_port)[settings.database_name]
+
+async_db = motor.MotorClient(settings.mongodb_host,
+                  settings.mongodb_port)[settings.database_name]
 
 db.users.create_index([('created', -1)])
 db.topics.create_index([('last_reply_time', -1), ('node', 1)])

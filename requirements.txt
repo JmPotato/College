@@ -1,4 +1,4 @@
-mongo==0.2.0
 pymongo==2.7.1
+motor==0.3.2
 qiniu==6.1.6
 tornado==4.0

@@ -24,6 +24,10 @@ class BaseHandler(tornado.web.RequestHandler):
         return self.application.db
 
     @property
+    def async_db(self):
+        return self.application.async_db
+
+    @property
     def messages(self):
         if not hasattr(self, '_messages'):
             messages = self.get_secure_cookie('saved_message')

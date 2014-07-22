@@ -9,7 +9,7 @@ import tornado.ioloop
 import tornado.httpserver
 
 import urls
-from init_db import db
+from init_db import db, async_db
 from settings import *
 from tornado.options import define, options
 
@@ -44,6 +44,7 @@ class Application(tornado.web.Application):
         tornado.web.Application.__init__(self, urls.handlers, **settings)
 
         self.db = db
+        self.async_db = async_db
 
 def main():
     tornado.options.parse_command_line()
