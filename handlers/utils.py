@@ -59,6 +59,7 @@ def make_content(text, extra_params='rel="nofollow"'):
         return t % data
 
     text = _unicode(xhtml_escape(text)).replace('\n', '<br />')
+    text = text.replace('&#39;', '\'')
     text = _EMAIL_RE.sub(cover_email, text)
     text = _MENTION_RE.sub(convert_mention, text)
     text = _FLOOR_RE.sub(convert_floor, text)
