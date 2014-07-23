@@ -84,6 +84,7 @@ class CreateHandler(BaseHandler):
             'author': self.current_user['name']
         })
         if topic:
+            self.send_message('不要发布重复内容！')
             self.redirect('/topic/%s' % topic['_id'])
             return
         time_now = time.time()
@@ -118,15 +119,6 @@ class ReplyHandler(BaseHandler):
         if self.messages:
             self.redirect('/topic/%s' % topic_id)
             return
-        reply = self.db.replies.find_one({
-            'topic': topic_id,
-            'content': content,
-            'author': self.current_user['name']
-        })
-        if reply:
-            self.send_message('不要发布重复内容！')
-            self.redirect('/topic/%s' % topic_id)
-            return
         index = self.db.topics.find_and_modify({'_id': ObjectId(topic_id)},
                                                update={'$inc': {'index': 1}})['index'] + 1
         time_now = time.time()
@@ -152,6 +144,16 @@ class ReplyHandler(BaseHandler):
         reply_nums = self.db.replies.find({'topic': topic_id}).count()
         last_page = self.get_page_num(reply_nums, 20)
         self.redirect('/topic/%s?p=%s' % (topic_id, last_page))
+
+class FavoriteHandler(BaseHandler):
+    @tornado.web.authenticated
+    def get(self, topic_id):
+        like = self.db.users.find_one({'name_lower': self.current_user['name_lower']})['like']
+        like.append(ObjectId(topic_id))
+        self.db.users.update({'name_lower': self.current_user['name_lower']},
+                             {'$set': {'like': like}})
+        self.send_message('收藏成功', type='success')
+        self.redirect('/topic/%s' % topic_id)
 
 class AppendHandler(BaseHandler):
     @tornado.web.authenticated
@@ -206,6 +208,7 @@ handlers = [
     (r'/topic', TopicListHandler),
     (r'/topic/create', CreateHandler),
     (r'/topic/(\w+)', TopicHandler),
+    (r'/topic/(\w+)/favorite', FavoriteHandler),
     (r'/topic/(\w+)/reply', ReplyHandler),
     (r'/topic/(\w+)/move', MoveHandler),
     (r'/topic/(\w+)/append', AppendHandler),
