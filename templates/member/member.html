@@ -22,9 +22,43 @@
     {% end %}
 </div>
 
+{% if current_user['name'] == member['name'] %}
+{% if liked_topics %}
+<div class="box">
+    <header>收藏</header>
+    {% for topic in liked_topics %}
+        {% set author = handler.get_user(topic['author']) %}
+        <div class="list">
+            {% set reply_nums = handler.db.replies.find({'topic': str(topic['_id'])}).count() %}
+            {% set last_page = handler.get_page_num(reply_nums, 20) %}
+            {% raw handler.get_avatar(author) %}
+            <div class="list-content">
+                <p>
+                    <a href="/topic/{{ topic['_id'] }}?p={{ last_page }}">{{ topic['title'] }}</a>
+                    <a href="/topic/{{ topic['_id'] }}?p={{ last_page }}#reply{{ reply_nums }}" class="badge
+                    {% if current_user and current_user['name_lower'] not in topic.get('read', []) %}badge-success{%end%}
+                     pull-right">{{ reply_nums }}</a>
+                </p>
+                <p>
+                    由
+                    <a href="/member/{{ author['name'] }}">{{ author['name'] }}</a> 发表 |
+                    {% if 'last_reply_by' in topic %}
+                    由 <a href="/member/{{ topic['last_reply_by'] }}">{{ topic['last_reply_by'] }}</a>
+                    回复于 {% raw handler.format_time(topic['last_reply_time']) %} |
+                    {% end %}
+                    位于 <a href="/node/{{ topic['node'] }}">{{ handler.get_node(topic['node'])['title'] }}</a> 节点
+                </p>
+            </div>
+        </div>
+    {% end %}
+    <a href="/member/{{ member['name'] }}/favorite">更多 >></a>
+</div>
+{% end %}
+{% end %}
+
 {% if topics.count() %}
 <div class="box">
-    <header>他的主题</header>
+    <header>主题</header>
     {% for topic in topics %}
         {% set author = handler.get_user(topic['author']) %}
         <div class="list">
@@ -54,40 +88,9 @@
 </div>
 {% end %}
 
-{% if liked_topics %}
-<div class="box">
-    <header>他的最爱</header>
-    {% for topic in liked_topics %}
-        {% set author = handler.get_user(topic['author']) %}
-        <div class="list">
-            {% set reply_nums = handler.db.replies.find({'topic': str(topic['_id'])}).count() %}
-            {% set last_page = handler.get_page_num(reply_nums, 20) %}
-            {% raw handler.get_avatar(author) %}
-            <div class="list-content">
-                <p>
-                    <a href="/topic/{{ topic['_id'] }}?p={{ last_page }}">{{ topic['title'] }}</a>
-                    <a href="/topic/{{ topic['_id'] }}?p={{ last_page }}#reply{{ reply_nums }}" class="badge
-                    {% if current_user and current_user['name_lower'] not in topic.get('read', []) %}badge-success{%end%}
-                     pull-right">{{ reply_nums }}</a>
-                </p>
-                <p>
-                    由
-                    <a href="/member/{{ author['name'] }}">{{ author['name'] }}</a> 发表 |
-                    {% if 'last_reply_by' in topic %}
-                    由 <a href="/member/{{ topic['last_reply_by'] }}">{{ topic['last_reply_by'] }}</a>
-                    回复于 {% raw handler.format_time(topic['last_reply_time']) %} |
-                    {% end %}
-                    位于 <a href="/node/{{ topic['node'] }}">{{ handler.get_node(topic['node'])['title'] }}</a> 节点
-                </p>
-            </div>
-        </div>
-    {% end %}
-</div>
-{% end %}
-
 {% if replies.count() %}
 <div class="box">
-    <header>他的回复</header>
+    <header>回复</header>
     <table class="table table-striped">
         <tbody>
         {% for reply in replies %}

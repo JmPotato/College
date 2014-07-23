@@ -25,12 +25,23 @@ class MemberPageHandler(BaseHandler):
                                        sort=[('created', -1)])
         replies = replies[:10]
         if member['like']:
-            member['like'] = member['like'][:self.settings['topics_per_page']]
-            liked_topics = [self.get_topic(x) for x in member['like']]
+            liked_topics = [self.get_topic(x) for x in member['like'][:10]]
         else:
             liked_topics = []
         self.render('member/member.html', member=member, topics=topics,
                     replies=replies, liked_topics=liked_topics)
+
+class FavoriteHandler(BaseHandler):
+    def get(self, name):
+        if not self.current_user['name'] == name:
+            self.redirect('/member/' + name)
+        member = self.get_user(name)
+        topics = [self.get_topic(x) for x in member['like']]
+        topics_count = len(topics)
+        p = int(self.get_argument('p', 1))
+        topics = topics[(p - 1) * 10:p*10]
+        self.render('member/topics.html', member=member,
+                    topics=topics, topics_count=topics_count, p=p, base_url = "/member/%s/favorite" % member['name'])
 
 class MemberTopicsHandler(BaseHandler):
     def get(self, name):
@@ -43,7 +54,7 @@ class MemberTopicsHandler(BaseHandler):
         p = int(self.get_argument('p', 1))
         topics = topics[(p - 1) * 10:p*10]
         self.render('member/topics.html', member=member,
-                    topics=topics, topics_count=topics_count, p=p)
+                    topics=topics, topics_count=topics_count, p=p, base_url = "/member/%s/topics" % member['name'])
 
 class ChangeRoleHandler(BaseHandler):
     @tornado.web.authenticated
@@ -58,7 +69,8 @@ class ChangeRoleHandler(BaseHandler):
 
 handlers = [
     (r'/member', MemberListHandler),
-    (r'/member/(\w.+)', MemberPageHandler),
-    (r'/member/(\w.+)/topics', MemberTopicsHandler),
-    (r'/member/(\w.+)/role', ChangeRoleHandler),
+    (r'/member/(\w+[.]?\w+[.]?)', MemberPageHandler),
+    (r'/member/(\w+[.]?\w+[.]?)/favorite', FavoriteHandler),
+    (r'/member/(\w+[.]?\w+[.]?)/topics', MemberTopicsHandler),
+    (r'/member/(\w+[.]?\w+[.]?)/role', ChangeRoleHandler),
 ]

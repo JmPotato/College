@@ -38,8 +38,9 @@ function Mention(username, floor) {
         {% end %}
         {% if current_user %}
         <div class="pull-right">
+            <a href="/topic/{{ topic['_id'] }}/favorite" class="label label-warning">收藏主题</a>
             {% if current_user['name'] == topic['author'] %}
-            <a href="/topic/{{ topic['_id'] }}/append" class="label label-warning">补充内容</a>
+            <a href="/topic/{{ topic['_id'] }}/append" class="label label-primary">补充内容</a>
             {% end %}
             {% if handler.check_role(return_bool=True) %}
             <a href="/topic/{{ topic['_id'] }}/move" class="label label-info">移动主题</a>
