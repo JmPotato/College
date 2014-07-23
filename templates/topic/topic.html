@@ -20,6 +20,19 @@ function Mention(username, floor) {
 	replyContent.focus();
 	replyContent.val(newContent);
 }
+
+function CrazyQueue(floor) {
+    floorContent = $("#reply" + floor).find("div.reply-content").text();
+    replyContent = $("#reply_content");
+    oldContent = replyContent.val();
+    newContent = "";
+    if (oldContent.length > 0) {
+        newContent = oldContent + "\n";
+    }
+    newContent += floorContent;
+    replyContent.focus();
+    replyContent.val(newContent);
+}
 </script>
 {% end %}
 
@@ -78,6 +91,7 @@ function Mention(username, floor) {
             {% set username = author['name'] %}
             {% set floor_number = reply['index'] %}
             <div class="pull-right">
+                <a onclick="CrazyQueue('{{ floor_number }}')" href="#reply_content" class="reply">队列</a>
                 <a onclick="Mention('{{ username }}', '{{ floor_number }}')" href="#reply_content" class="reply">@</a>
                 <span class="reply-index">#{{ reply['index'] }}</span>
             </div>
