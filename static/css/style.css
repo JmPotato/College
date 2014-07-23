@@ -108,6 +108,13 @@ body {
 .reply-content,#notification_list .well,.list-content,#current_base p,.author_box p {
 	margin-left:61px;
 }
+.author_box a {
+    color:#000
+}
+.author_box a:hover {
+	text-decoration:none;
+    color:#000
+}
 #current_base {
 	min-height:48px
 }

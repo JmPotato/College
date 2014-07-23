@@ -1,5 +1,6 @@
 {% extends '../layout.html' %}
 
+{% block description %}{{ topic['title'] }},{{ topic['node'] }},{% set node = handler.get_node(topic['node']) %}{{ node['title'] }}{% end %}
 {% block title %}{{ topic['title'] }} | {% end %}
 
 {% block head %}

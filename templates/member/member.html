@@ -1,5 +1,6 @@
 {% extends '../layout.html' %}
 
+{% block description %}{{ member['name'] }},{{ member['description'] }}{% end %}
 {% block title %}{{ member['name'] }} | {% end %}
 
 {% block content %}
