@@ -41,7 +41,7 @@ function Mention(username, floor) {
             {% if topic['_id'] not in current_user['like'] %}
                 <a href="/topic/{{ topic['_id'] }}/like" class="label label-warning">收藏主题</a>
             {% else %}
-                <a href="/topic/{{ topic['_id'] }}/dislike" class="label label-warning">收藏主题</a>
+                <a href="/topic/{{ topic['_id'] }}/dislike" class="label label-warning">取消收藏</a>
             {% end %}
             {% if current_user['name'] == topic['author'] %}
             <a href="/topic/{{ topic['_id'] }}/append" class="label label-primary">补充内容</a>

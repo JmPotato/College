@@ -161,7 +161,7 @@ class LikeHandler(BaseHandler):
 
 class DisikeHandler(BaseHandler):
     @tornado.web.authenticated
-    def get(self):
+    def get(self, topic_id):
         like = self.db.users.find_one({'name_lower': self.current_user['name_lower']})['like']
         like.remove(ObjectId(topic_id))
         self.db.users.update({'name_lower': self.current_user['name_lower']},
