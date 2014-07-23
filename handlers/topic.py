@@ -145,14 +145,28 @@ class ReplyHandler(BaseHandler):
         last_page = self.get_page_num(reply_nums, 20)
         self.redirect('/topic/%s?p=%s' % (topic_id, last_page))
 
-class FavoriteHandler(BaseHandler):
+class LikeHandler(BaseHandler):
     @tornado.web.authenticated
     def get(self, topic_id):
         like = self.db.users.find_one({'name_lower': self.current_user['name_lower']})['like']
+        if ObjectId(topic_id) in like:
+            self.send_message('你已收藏过此主题')
+            self.redirect('/topic/%s' % topic_id)
+            return
         like.append(ObjectId(topic_id))
         self.db.users.update({'name_lower': self.current_user['name_lower']},
                              {'$set': {'like': like}})
         self.send_message('收藏成功', type='success')
+        self.redirect('/topic/%s' % topic_id)
+
+class DisikeHandler(BaseHandler):
+    @tornado.web.authenticated
+    def get(self):
+        like = self.db.users.find_one({'name_lower': self.current_user['name_lower']})['like']
+        like.remove(ObjectId(topic_id))
+        self.db.users.update({'name_lower': self.current_user['name_lower']},
+                             {'$set': {'like': like}})
+        self.send_message('取消收藏成功', type='success')
         self.redirect('/topic/%s' % topic_id)
 
 class AppendHandler(BaseHandler):
@@ -208,7 +222,8 @@ handlers = [
     (r'/topic', TopicListHandler),
     (r'/topic/create', CreateHandler),
     (r'/topic/(\w+)', TopicHandler),
-    (r'/topic/(\w+)/favorite', FavoriteHandler),
+    (r'/topic/(\w+)/like', LikeHandler),
+    (r'/topic/(\w+)/dislike', DisikeHandler),
     (r'/topic/(\w+)/reply', ReplyHandler),
     (r'/topic/(\w+)/move', MoveHandler),
     (r'/topic/(\w+)/append', AppendHandler),
