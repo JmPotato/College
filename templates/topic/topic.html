@@ -91,7 +91,7 @@ function CrazyQueue(floor) {
             {% set username = author['name'] %}
             {% set floor_number = reply['index'] %}
             <div class="pull-right">
-                <a onclick="CrazyQueue('{{ floor_number }}')" href="#reply_content" class="reply">队列</a>
+                <a onclick="CrazyQueue('{{ floor_number }}')" href="#reply_content" class="reply">队形</a>
                 <a onclick="Mention('{{ username }}', '{{ floor_number }}')" href="#reply_content" class="reply">@</a>
                 <span class="reply-index">#{{ reply['index'] }}</span>
             </div>
@@ -145,9 +145,11 @@ function CrazyQueue(floor) {
     <p><a href="/member/{{ topic['author'] }}" class="username">{{ topic['author'] }}</a></p>
     {% if handler.get_user(topic['author'])['website'] %}
     <p><a href="{{ handler.get_user(topic['author'])['website'] }}" rel="nofollow">{{ handler.get_user(topic['author'])['website'] }}</a></p>
+    {% else %}
+    <br />
     {% end %}
     {% if handler.get_user(topic['author'])['description'] %}
-    <footer>{% raw handler.get_user(topic['author'])['description'] %}</footer>
+    <footer>{% raw escape(handler.get_user(topic['author'])['description']).replace('\n','<br />') %}</footer>
     {% end %}
 </div>
 <div class="box">
