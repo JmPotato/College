@@ -91,7 +91,7 @@ function CrazyQueue(floor) {
             {% set username = author['name'] %}
             {% set floor_number = reply['index'] %}
             <div class="pull-right">
-                <a onclick="CrazyQueue('{{ floor_number }}')" href="#reply_content" class="reply">队列</a>
+                <a onclick="CrazyQueue('{{ floor_number }}')" href="#reply_content" class="reply">队形</a>
                 <a onclick="Mention('{{ username }}', '{{ floor_number }}')" href="#reply_content" class="reply">@</a>
                 <span class="reply-index">#{{ reply['index'] }}</span>
             </div>
