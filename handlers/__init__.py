@@ -69,7 +69,7 @@ class BaseHandler(tornado.web.RequestHandler):
 
     def get_current_user(self):
         token = self.get_secure_cookie('token')
-        user = self.application.db.users.find_one({'token': token})
+        user = self.db.users.find_one({'token': token})
         if user and user['role'] < 0:
             self.send_message('你被关小黑屋了么么哒')
             self.clear_cookie('token')
