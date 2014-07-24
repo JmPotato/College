@@ -149,7 +149,7 @@ function CrazyQueue(floor) {
     <br />
     {% end %}
     {% if handler.get_user(topic['author'])['description'] %}
-    <footer>{% raw handler.get_user(topic['author'])['description'] %}</footer>
+    <footer>{% raw escape(handler.get_user(topic['author'])['description']).replace('\n','<br />') %}</footer>
     {% end %}
 </div>
 <div class="box">

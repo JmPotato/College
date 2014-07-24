@@ -98,8 +98,19 @@ class SettingsHandler(BaseHandler):
             if website[0:7] != 'http://' and website[0:8] != 'https://':
                 website = 'http://' + website
         description = self.get_argument('description', '')
-        if len(description) > 1500:
+        enterCount = 0
+        for c in description:
+            if c == '\n':
+                enterCount += 1
+                if enterCount >= 10:
+                    self.send_message('喵了个咪简介最多10行！！！')
+                    self.redirect('/account/settings')
+                    return
+                    break
+        if len(description) > 310:
             self.send_message('你这是要写自传的节奏嘛，简介太长了！')
+            self.redirect('/account/settings')
+            return
         self.db.users.update({'_id': self.current_user['_id']}, {'$set': {
             'website': website,
             'description': description,
