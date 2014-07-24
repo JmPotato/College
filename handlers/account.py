@@ -94,6 +94,9 @@ class SettingsHandler(BaseHandler):
     @tornado.web.authenticated
     def post(self):
         website = self.get_argument('website', '')
+        if website:
+            if website[0:7] != 'http://' and website[0:8] != 'https://':
+                website = 'http://' + website
         description = self.get_argument('description', '')
         if len(description) > 1500:
             self.send_message('你这是要写自传的节奏嘛，简介太长了！')
