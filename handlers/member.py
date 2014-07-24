@@ -69,8 +69,8 @@ class ChangeRoleHandler(BaseHandler):
 
 handlers = [
     (r'/member', MemberListHandler),
-    (r'/member/(\w+[.]?\w+[.]?)', MemberPageHandler),
-    (r'/member/(\w+[.]?\w+[.]?)/favorite', FavoriteHandler),
-    (r'/member/(\w+[.]?\w+[.]?)/topics', MemberTopicsHandler),
-    (r'/member/(\w+[.]?\w+[.]?)/role', ChangeRoleHandler),
+    (r'/member/([A-Za-z][A-Za-z0-9._]{0,9})', MemberPageHandler),
+    (r'/member/([A-Za-z][A-Za-z0-9._]{0,9})/favorite', FavoriteHandler),
+    (r'/member/([A-Za-z][A-Za-z0-9._]{0,9})/topics', MemberTopicsHandler),
+    (r'/member/([A-Za-z][A-Za-z0-9._]{0,9})/role', ChangeRoleHandler),
 ]
