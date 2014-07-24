@@ -146,6 +146,9 @@ function CrazyQueue(floor) {
     {% if handler.get_user(topic['author'])['website'] %}
     <p><a href="{{ handler.get_user(topic['author'])['website'] }}" rel="nofollow">{{ handler.get_user(topic['author'])['website'] }}</a></p>
     {% end %}
+    {% if handler.get_user(topic['author'])['description'] %}
+    <footer>{% raw handler.get_user(topic['author'])['description'] %}</footer>
+    {% end %}
 </div>
 <div class="box">
     <header>{{ handler.get_node(topic['node'])['title'] }}</header>
