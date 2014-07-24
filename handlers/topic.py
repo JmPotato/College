@@ -4,10 +4,11 @@
 import time
 
 import tornado.web
+from tornado import gen
+from bson.objectid import ObjectId
 
 from . import BaseHandler
 from .utils import make_content
-from bson.objectid import ObjectId
 
 class TopicListHandler(BaseHandler):
     def get(self):
@@ -25,20 +26,21 @@ class TopicListHandler(BaseHandler):
 
 class TopicHandler(BaseHandler):
     @tornado.web.authenticated
+    @gen.coroutine
     def get(self, topic_id):
         topic = self.get_topic(topic_id)
         if self.current_user:
-            self.db.notifications.update({
+            yield self.async_db.notifications.update({
                 'topic': ObjectId(topic_id),
                 'to': self.current_user['name_lower']
             }, {'$set': {'read': True}}, multi = True)
             if 'read' in topic:
-                self.db.topics.update(
+                yield self.async_db.topics.update(
                     {'_id': ObjectId(topic_id)},
                     {'$addToSet': {'read': self.current_user['name_lower']}}
                 )
             else:
-                self.db.topics.update(
+                yield self.async_db.topics.update(
                     {'_id': ObjectId(topic_id)},
                     {'$set': {'read': [self.current_user['name_lower']]}}
                 )
@@ -63,6 +65,7 @@ class CreateHandler(BaseHandler):
         self.render('topic/create.html', node_name = node_name)
 
     @tornado.web.authenticated
+    @gen.coroutine
     def post(self):
         node = self.get_argument("node", None)
         title = self.get_argument('title', None)
@@ -78,7 +81,7 @@ class CreateHandler(BaseHandler):
         if self.messages:
             self.render('topic/create.html', node_name=node)
             return
-        topic = self.db.topics.find_one({
+        topic = yield self.async_db.topics.find_one({
             'title': title,
             'content': content,
             'author': self.current_user['name']
@@ -104,12 +107,13 @@ class CreateHandler(BaseHandler):
         source = self.get_source()
         if source:
             data['source'] = source
-        topic_id = self.db.topics.insert(data)
+        topic_id = yield self.async_db.topics.insert(data)
         self.send_notification(content_html, topic_id)
         self.redirect('/topic/%s' % topic_id)
 
 class ReplyHandler(BaseHandler):
     @tornado.web.authenticated
+    @gen.coroutine
     def post(self, topic_id):
         content = self.get_argument('content', None)
         if not content:
@@ -135,8 +139,8 @@ class ReplyHandler(BaseHandler):
         }
         if source:
             data['source'] = source
-        self.db.replies.insert(data)
-        self.db.topics.update({'_id': ObjectId(topic_id)},
+        yield self.async_db.replies.insert(data)
+        yield self.async_db.topics.update({'_id': ObjectId(topic_id)},
                               {'$set': {'last_reply_time': time_now,
                                         'last_reply_by':
                                         self.current_user['name'],
@@ -147,24 +151,26 @@ class ReplyHandler(BaseHandler):
 
 class LikeHandler(BaseHandler):
     @tornado.web.authenticated
+    @gen.coroutine
     def get(self, topic_id):
-        like = self.db.users.find_one({'name_lower': self.current_user['name_lower']})['like']
+        like = yield self.async_db.users.find_one({'name_lower': self.current_user['name_lower']})['like']
         if ObjectId(topic_id) in like:
             self.send_message('你已收藏过此主题')
             self.redirect('/topic/%s' % topic_id)
             return
         like.append(ObjectId(topic_id))
-        self.db.users.update({'name_lower': self.current_user['name_lower']},
+        yield self.async_db.users.update({'name_lower': self.current_user['name_lower']},
                              {'$set': {'like': like}})
         self.send_message('收藏成功', type='success')
         self.redirect('/topic/%s' % topic_id)
 
 class DisikeHandler(BaseHandler):
     @tornado.web.authenticated
+    @gen.coroutine
     def get(self, topic_id):
-        like = self.db.users.find_one({'name_lower': self.current_user['name_lower']})['like']
+        like = yield self.async_db.users.find_one({'name_lower': self.current_user['name_lower']})['like']
         like.remove(ObjectId(topic_id))
-        self.db.users.update({'name_lower': self.current_user['name_lower']},
+        yield self.async_db.users.update({'name_lower': self.current_user['name_lower']},
                              {'$set': {'like': like}})
         self.send_message('取消收藏成功', type='success')
         self.redirect('/topic/%s' % topic_id)
@@ -175,29 +181,31 @@ class AppendHandler(BaseHandler):
         self.render('topic/append.html')
 
     @tornado.web.authenticated
+    @gen.coroutine
     def post(self, topic_id):
         content = self.get_argument('content', None)
         if not content:
             self.send_message('请完整填写信息喵')
-        appended_content = self.db.topics.find_one({'_id': ObjectId(topic_id)})['appended_content']
+        appended_content = yield self.async_db.topics.find_one({'_id': ObjectId(topic_id)})['appended_content']
         if make_content(content) in appended_content:
             self.send_message('不要发布重复内容！')
             self.redirect('/topic/%s' % topic_id)
             return
         appended_content.append(make_content(content))
-        self.db.topics.update({'_id': ObjectId(topic_id)},
+        yield self.async_db.topics.update({'_id': ObjectId(topic_id)},
                               {'$set': {'appended': time.time(),
                                         'appended_content': appended_content}})
         self.redirect('/topic/%s' % topic_id)
 
 class RemoveHandler(BaseHandler):
     @tornado.web.authenticated
+    @gen.coroutine
     def get(self, topic_id):
         self.check_role()
         topic_id = ObjectId(topic_id)
-        self.db.topics.remove({'_id': topic_id})
-        self.db.replies.remove({'topic': topic_id})
-        self.db.notifications.remove({'topic': ObjectId(topic_id)})
+        yield self.async_db.topics.remove({'_id': topic_id})
+        yield self.async_db.replies.remove({'topic': topic_id})
+        yield self.async_db.notifications.remove({'topic': ObjectId(topic_id)})
         self.send_message('就这样......它们走了', type='success')
         self.redirect('/')
         return
@@ -209,10 +217,11 @@ class MoveHandler(BaseHandler):
         self.render('topic/move.html', topic=topic)
 
     @tornado.web.authenticated
+    @gen.coroutine
     def post(self, topic_id):
         node_name = self.get_argument('to_node', '')
         node = self.get_node(node_name.lower())
-        self.db.topics.update({'_id': ObjectId(topic_id)},
+        yield self.async_db.topics.update({'_id': ObjectId(topic_id)},
                               {'$set': {'node': node['name']}})
         self.send_message('搬家成功！', type='success')
         self.redirect('/topic/%s' % topic_id)

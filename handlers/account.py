@@ -7,6 +7,7 @@ import time
 import hashlib
 
 import tornado.web
+from tornado import gen
 
 from . import BaseHandler
 from bson.objectid import ObjectId
@@ -20,6 +21,7 @@ class SignupHandler(BaseHandler):
             self.redirect(self.get_argument('next', '/'))
         self.render('account/signup.html')
 
+    @gen.coroutine
     def post(self):
         username = self.get_argument('username', None)
         email = self.get_argument('email', None)
@@ -42,9 +44,9 @@ class SignupHandler(BaseHandler):
             return
         token = hashlib.sha1(password + username.lower()).hexdigest()
         role = 1
-        if not self.db.users.count():
+        if not (yield self.async_db.users.count()):
             role = 3
-        self.db.users.insert({
+        yield self.async_db.users.insert({
             'name': username,
             'name_lower': username.lower(),
             'avatar_name': '',
@@ -67,13 +69,14 @@ class SigninHandler(BaseHandler):
             self.redirect(self.get_argument('next', '/'))
         self.render('account/signin.html')
 
+    @gen.coroutine
     def post(self):
         username = self.get_argument('username', '').lower()
         password = self.get_argument('password', None)
         if not (username and password):
             self.send_message('请完整填写信息喵')
         token = hashlib.sha1(password + username.lower()).hexdigest()
-        user = self.db.users.find_one({'name_lower': username, 'token': token})
+        user = yield self.async_db.users.find_one({'name_lower': username, 'token': token})
         if not user:
             self.send_message('查无此喵（无效的账户或密码）')
             self.render('account/signin.html')
@@ -92,6 +95,7 @@ class SettingsHandler(BaseHandler):
         self.render('account/settings.html')
 
     @tornado.web.authenticated
+    @gen.coroutine
     def post(self):
         website = self.get_argument('website', '')
         if website:
@@ -111,7 +115,7 @@ class SettingsHandler(BaseHandler):
             self.send_message('你这是要写自传的节奏嘛，简介太长了！')
             self.redirect('/account/settings')
             return
-        self.db.users.update({'_id': self.current_user['_id']}, {'$set': {
+        yield self.async_db.users.update({'_id': self.current_user['_id']}, {'$set': {
             'website': website,
             'description': description,
         }})
@@ -144,18 +148,20 @@ class ChangeAvatarHandler(BaseHandler):
 
 class RemoveAvatarHandler(BaseHandler):
     @tornado.web.authenticated
+    @gen.coroutine
     def post(self):
         if not self.current_user['avatar_name']:
             self.send_message('你在 College 根本没有头像嘛，浪费感情')
             self.render('account/settings.html')
             return
-        self.db.users.update({'_id': self.current_user['_id']},
+        yield self.async_db.users.update({'_id': self.current_user['_id']},
                              {'$set': {'avatar_name': ''}})
         self.send_message('头像移除成功', type='success')
         self.redirect('/account/settings')
 
 class ChangePasswordHandler(BaseHandler):
     @tornado.web.authenticated
+    @gen.coroutine
     def post(self):
         old_password = self.get_argument('old_password', None)
         new_password = self.get_argument('new_password', None)
@@ -170,7 +176,7 @@ class ChangePasswordHandler(BaseHandler):
             return
         key = new_password + self.current_user['name'].lower()
         token = str(hashlib.sha1(key).hexdigest())
-        self.db.users.update({'_id': self.current_user['_id']},
+        yield self.async_db.users.update({'_id': self.current_user['_id']},
                                {'$set': {'token': token}})
         self.set_secure_cookie('token', token, expires_days=30)
         self.send_message('修改成功', type='success')
@@ -191,14 +197,16 @@ class NotificationsHandler(BaseHandler):
 
 class NotificationsClearHandler(BaseHandler):
     @tornado.web.authenticated
+    @gen.coroutine
     def get(self):
-        self.db.notifications.remove({'to': self.current_user['name_lower']})
+        yield self.async_db.notifications.remove({'to': self.current_user['name_lower']})
         self.redirect('/')
 
 class NotificationsRemoveHandler(BaseHandler):
     @tornado.web.authenticated
+    @gen.coroutine
     def get(self, id):
-        self.db.notifications.remove({'_id': ObjectId(id)})
+        yield self.async_db.notifications.remove({'_id': ObjectId(id)})
         self.redirect(self.get_argument('next', '/account/notifications'))
 
 class UploadHandler(BaseHandler):

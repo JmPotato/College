@@ -2,6 +2,8 @@
 # -*- coding: utf-8 -*-
 
 import tornado.web
+from tornado import gen
+
 from . import BaseHandler
 
 class NodeListHandler(BaseHandler):
@@ -26,6 +28,7 @@ class AddHandler(BaseHandler):
         self.render('node/add.html')
 
     @tornado.web.authenticated
+    @gen.coroutine
     def post(self):
         self.check_role()
         node_name = self.get_argument('node_name', None)
@@ -43,7 +46,7 @@ class AddHandler(BaseHandler):
         if self.messages:
             self.render('node/add.html')
             return
-        self.db.nodes.insert({
+        yield self.async_db.nodes.insert({
             'name': node_name,
             'name_lower': node_name.lower(),
             'title': node_title,
@@ -61,6 +64,7 @@ class EditHandler(BaseHandler):
         self.render('node/edit.html', node = node)
 
     @tornado.web.authenticated
+    @gen.coroutine
     def post(self, node_name):
         self.check_role()
         node = self.get_node(node_name)
@@ -77,14 +81,14 @@ class EditHandler(BaseHandler):
         if self.messages:
             self.render('node/edit.html', node = node)
             return
-        self.db.topics.update({'node': node['name']},
+        yield self.async_db.topics.update({'node': node['name']},
                               {'$set': {'node': node_name}}, multi=True)
         node['name'] = node_name
         node['name_lower'] = node_name.lower()
         node['title'] = node_title
         node['description'] = description
         node['html'] = html
-        self.db.nodes.save(node)
+        yield self.async_db.nodes.save(node)
 
         self.send_message('修改成功！', type='success')
         self.redirect(self.get_argument('next', '/node/' + node['name']))

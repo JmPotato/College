@@ -2,6 +2,8 @@
 # -*- coding: utf-8 -*-
 
 import tornado.web
+from tornado import gen
+
 from . import BaseHandler
 
 
@@ -16,6 +18,7 @@ class MemberListHandler(BaseHandler):
                     count=count, p=p)
 
 class MemberPageHandler(BaseHandler):
+    @tornado.web.authenticated
     def get(self, name):
         member = self.get_user(name)
         topics = self.db.topics.find({'author': member['name']},
@@ -32,6 +35,7 @@ class MemberPageHandler(BaseHandler):
                     replies=replies, liked_topics=liked_topics)
 
 class FavoriteHandler(BaseHandler):
+    @tornado.web.authenticated
     def get(self, name):
         if not self.current_user['name'] == name:
             self.redirect('/member/' + name)
@@ -44,6 +48,7 @@ class FavoriteHandler(BaseHandler):
                     topics=topics, topics_count=topics_count, p=p, base_url = "/member/%s/favorite" % member['name'])
 
 class MemberTopicsHandler(BaseHandler):
+    @tornado.web.authenticated
     def get(self, name):
         member = self.get_user(name)
         topics = self.db.topics.find(
@@ -58,12 +63,13 @@ class MemberTopicsHandler(BaseHandler):
 
 class ChangeRoleHandler(BaseHandler):
     @tornado.web.authenticated
+    @gen.coroutine
     def post(self, name):
         role = int(self.get_argument('role', 100))
         if self.current_user['role'] < 3:
             self.check_role(role_min=role + 1)
         name = name.lower()
-        self.db.users.update({'name_lower': name},
+        yield self.async_db.users.update({'name_lower': name},
                                {'$set': {'role': role}})
         self.redirect('/member/' + name)
 
