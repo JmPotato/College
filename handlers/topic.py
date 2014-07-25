@@ -153,7 +153,8 @@ class LikeHandler(BaseHandler):
     @tornado.web.authenticated
     @gen.coroutine
     def get(self, topic_id):
-        like = yield self.async_db.users.find_one({'name_lower': self.current_user['name_lower']})['like']
+        like = yield self.async_db.users.find_one({'name_lower': self.current_user['name_lower']})
+        like = dict(like)['like']
         if ObjectId(topic_id) in like:
             self.send_message('你已收藏过此主题')
             self.redirect('/topic/%s' % topic_id)
@@ -168,7 +169,8 @@ class DisikeHandler(BaseHandler):
     @tornado.web.authenticated
     @gen.coroutine
     def get(self, topic_id):
-        like = yield self.async_db.users.find_one({'name_lower': self.current_user['name_lower']})['like']
+        like = yield self.async_db.users.find_one({'name_lower': self.current_user['name_lower']})
+        like = dict(like)['like']
         like.remove(ObjectId(topic_id))
         yield self.async_db.users.update({'name_lower': self.current_user['name_lower']},
                              {'$set': {'like': like}})
