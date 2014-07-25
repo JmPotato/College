@@ -188,7 +188,8 @@ class AppendHandler(BaseHandler):
         content = self.get_argument('content', None)
         if not content:
             self.send_message('请完整填写信息喵')
-        appended_content = yield self.async_db.topics.find_one({'_id': ObjectId(topic_id)})['appended_content']
+        appended_content = yield self.async_db.topics.find_one({'_id': ObjectId(topic_id)})
+        appended_content = dict(appended_content)['appended_content']
         if make_content(content) in appended_content:
             self.send_message('不要发布重复内容！')
             self.redirect('/topic/%s' % topic_id)
