@@ -44,7 +44,7 @@ class TopicHandler(BaseHandler):
                     {'_id': ObjectId(topic_id)},
                     {'$set': {'read': [self.current_user['name_lower']]}}
                 )
-        replies = self.db.replies.find({'topic': ObjectId(topic_id)},
+        replies = self.db.replies.find({'topic': topic_id},
                                        sort=[('index', 1)])
         replies_count = replies.count()
         p = int(self.get_argument('p', 1))
@@ -115,7 +115,6 @@ class ReplyHandler(BaseHandler):
     @tornado.web.authenticated
     @gen.coroutine
     def post(self, topic_id):
-        topic_id = ObjectId(topic_id)
         content = self.get_argument('content', None)
         if not content:
             self.send_message('请完整填写信息喵')
@@ -124,7 +123,7 @@ class ReplyHandler(BaseHandler):
         if self.messages:
             self.redirect('/topic/%s' % topic_id)
             return
-        index = self.db.topics.find_and_modify({'_id': topic_id},
+        index = self.db.topics.find_and_modify({'_id': ObjectId(topic_id)},
                                                update={'$inc': {'index': 1}})['index'] + 1
         time_now = time.time()
         content_html = make_content(content)
@@ -141,7 +140,7 @@ class ReplyHandler(BaseHandler):
         if source:
             data['source'] = source
         yield self.async_db.replies.insert(data)
-        yield self.async_db.topics.update({'_id': topic_id},
+        yield self.async_db.topics.update({'_id': ObjectId(topic_id)},
                               {'$set': {'last_reply_time': time_now,
                                         'last_reply_by':
                                         self.current_user['name'],
