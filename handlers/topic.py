@@ -44,7 +44,7 @@ class TopicHandler(BaseHandler):
                     {'_id': ObjectId(topic_id)},
                     {'$set': {'read': [self.current_user['name_lower']]}}
                 )
-        replies = self.db.replies.find({'topic': topic_id},
+        replies = self.db.replies.find({'topic': ObjectId(topic_id)},
                                        sort=[('index', 1)])
         replies_count = replies.count()
         p = int(self.get_argument('p', 1))
