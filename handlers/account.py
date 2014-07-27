@@ -209,33 +209,7 @@ class NotificationsRemoveHandler(BaseHandler):
         yield self.async_db.notifications.remove({'_id': ObjectId(id)})
         self.redirect(self.get_argument('next', '/account/notifications'))
 
-class UploadHandler(BaseHandler):
-    @tornado.web.authenticated
-    def get(self):
-        self.render('account/upload.html')
-
-    @tornado.web.authenticated
-    def post(self):
-        try:
-            file_metas = self.request.files['img_file'][0]
-        except:
-            self.send_message('图片半路走丢了，再试一次吧')
-            self.render('account/upload.html')
-            return
-        with open(file_metas['filename'], 'w') as f:
-            f.write(file_metas['body'])
-        url = self.upload_img(file_metas['filename'], file_metas['filename'])
-        if not url:
-            os.remove(file_metas['filename'])
-            self.send_message('图片上传失败')
-            self.render('account/upload.html')
-            return
-        os.remove(file_metas['filename'])
-        self.send_message('图片上传成功，你的图片地址为：%s 把地址复制到主题里即可插入图片' % url, type='success')
-        self.render('account/upload.html')
-
 handlers = [
-    (r'/account/upload', UploadHandler),
     (r'/account/signup', SignupHandler),
     (r'/account/signin', SigninHandler),
     (r'/account/signout', SignoutHandler),
