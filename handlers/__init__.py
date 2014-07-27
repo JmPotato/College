@@ -130,6 +130,12 @@ class BaseHandler(tornado.web.RequestHandler):
             raise tornado.web.HTTPError(404)
         return node
 
+    def get_note(self, note_id):
+        note = self.db.notes.find_one({'_id': ObjectId(note_id)})
+        if not note:
+            raise tornado.web.HTTPError(404)
+        return note
+
     def get_page_num(self, count, per_page):
         return int((count + per_page - 1) / per_page)
 

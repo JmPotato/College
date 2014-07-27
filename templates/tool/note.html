@@ -1,0 +1,27 @@
+{% extends '../layout.html' %}
+
+{% block title %}笔记本 | {% end %}
+
+{% block content %}
+<div class="box">
+    <header>{{ note['title'] }}
+        <div class="pull-right">
+            <a href="/tool/note/{{ note['_id'] }}/edit" class="btn btn-primary">编辑笔记</a>
+            <a href="/tool/note/{{ note['_id'] }}/delete" class="btn btn-danger">删除笔记</a>
+        </div>
+    </header>
+    <article>{{ note['content'] }}</article>
+</div>
+{% end %}
+
+{% block sidebar %}
+<div class="box">
+    <header>笔记信息</header>
+    <ul>
+        <li>创建时间: {{ handler.format_time(note['created']) }}</li>
+        {% if note['modify'] %}
+        <li>修改时间: {{ handler.format_time(note['modify']) }}</li>
+        {% end %}
+    </ul>
+</div>
+{% end %}

@@ -1,0 +1,33 @@
+{% extends '../layout.html' %}
+
+{% block title %}笔记本 | {% end %}
+
+{% block content %}
+<div class="box">
+    <header>笔记本
+        <div class="pull-right">
+            <a href="/tool/note/new" class="btn btn-primary">新建笔记</a>
+        </div>
+    </header>
+    {% if notes_count>0 %}
+    <ul class="list-group">
+        {% for note in notes %}
+            <a href="/tool/note/{{ note['_id'] }}" class="list-group-item">{{ note['title'] }}</a>
+        {% end %}
+    </ul>
+    {% end %}
+    {% set base_url = "/tool/note" %}
+    <ul class="pager">
+    {% if p > 1 %}
+    <li class="previous">
+        <a href="{{ base_url }}?p={{p-1}}">&lt;&lt; 上一页</a>
+    </li>
+    {% end %}
+    {% if p*20 < notes_count %}
+    <li class="next">
+        <a href="{{ base_url }}?p={{p+1}}">下一页 &gt;&gt;</a>
+    </li>
+    {% end %}
+    </ul>
+</div>
+{% end %}

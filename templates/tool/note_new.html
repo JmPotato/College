@@ -1,0 +1,29 @@
+{% extends '../layout.html' %}
+
+{% block title %}新建笔记 | {% end %}
+
+{% block content %}
+<div class="box">
+    <header>新建笔记</header>
+    <form class="form-horizontal" role="form" method="post" action="#">
+        <fieldset>
+        {% raw xsrf_form_html() %}
+            <div class="form-group">
+                <div class="col-md-12">
+                    <input type="text" class="form-control" id="title" name="title" placeholder="标题" maxlength="100" required>
+                </div>
+            </div>
+            <div class="form-group">
+                <div class="col-md-12">
+                    <textarea class="form-control" rows="10" id="content" name="content" required></textarea>
+                </div>
+            </div>
+            <div class="form-group">
+                <div class="col-sm-10">
+                    <button type="submit" class="btn btn-primary">创建</button>
+                </div>
+            </div>
+        </fieldset>
+    </form>
+</div>
+{% end %}
