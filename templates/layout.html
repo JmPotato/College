@@ -86,10 +86,10 @@
                 <div class="box">
                     <header>站点统计</header>
                     <ul>
-                        <li>成员数: {{ handler.async_db.users.count() }}</li>
-                        <li>节点数: {{ handler.async_db.nodes.count() }}</li>
-                        <li>主题数: {{ handler.async_db.topics.count() }}</li>
-                        <li>回复数: {{ handler.async_db.replies.count() }}</li>
+                        <li>成员数: {{ handler.db.users.count() }}</li>
+                        <li>节点数: {{ handler.db.nodes.count() }}</li>
+                        <li>主题数: {{ handler.db.topics.count() }}</li>
+                        <li>回复数: {{ handler.db.replies.count() }}</li>
                     </ul>
                 </div>
             </div>
