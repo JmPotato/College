@@ -28,6 +28,7 @@ class Application(tornado.web.Application):
         #Use Qiniu to store avatars
         qiniu.conf.ACCESS_KEY = qiniu_access_key
         qiniu.conf.SECRET_KEY = qiniu_secret_key
+
         settings = dict(
             static_path = os.path.join(os.path.dirname(__file__), "static"),
             template_path = os.path.join(os.path.dirname(__file__), "templates"),
