@@ -205,8 +205,7 @@ class RemoveHandler(BaseHandler):
     @gen.coroutine
     def get(self, topic_id):
         self.check_role()
-        topic_id = ObjectId(topic_id)
-        yield self.async_db.topics.remove({'_id': topic_id})
+        yield self.async_db.topics.remove({'_id': ObjectId(topic_id)})
         yield self.async_db.replies.remove({'topic': topic_id})
         yield self.async_db.notifications.remove({'topic': topic_id})
         self.send_message('删除成功', type='success')
