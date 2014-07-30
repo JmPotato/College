@@ -61,8 +61,8 @@ class NewNoteHandler(BaseHandler):
     @tornado.web.authenticated
     @gen.coroutine
     def post(self):
-        title = self.get_argument('title', None)
-        content = self.get_argument('content', None)
+        title = self.get_escaped_argument('title', None)
+        content = self.get_escaped_argument('content', None)
         if not (title and content):
             self.send_message('请完整填写信息喵')
         if self.messages:
@@ -104,8 +104,8 @@ class EditNoteHandler(BaseHandler):
             self.send_message('无权限！')
             self.redirect('/tool/note')
             return
-        title = self.get_argument('title', None)
-        content = self.get_argument('content', None)
+        title = self.get_escaped_argument('title', None)
+        content = self.get_escaped_argument('content', None)
         if not (title and content):
             self.send_message('请完整填写信息喵')
         if self.messages:

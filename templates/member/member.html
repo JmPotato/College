@@ -17,7 +17,7 @@
     </div>
     {% if member['description'] %}
     <footer>
-        <p>{% raw escape(member['description']).replace('\n','<br />') %}</p>
+        <p>{% raw member['description'].replace('\n','<br />') %}</p>
     </footer>
     {% end %}
 </div>

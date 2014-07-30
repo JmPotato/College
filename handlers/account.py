@@ -23,8 +23,8 @@ class SignupHandler(BaseHandler):
 
     @gen.coroutine
     def post(self):
-        username = self.get_argument('username', None)
-        email = self.get_argument('email', None)
+        username = self.get_escaped_argument('username', None)
+        email = self.get_escaped_argument('email', None)
         password = self.get_argument('password', None)
         r_password = self.get_argument('r_password', None)
         if not (username and email and password and r_password):
@@ -97,11 +97,11 @@ class SettingsHandler(BaseHandler):
     @tornado.web.authenticated
     @gen.coroutine
     def post(self):
-        website = self.get_argument('website', '')
+        website = self.get_escaped_argument('website', '')
         if website:
             if website[0:7] != 'http://' and website[0:8] != 'https://':
                 website = 'http://' + website
-        description = self.get_argument('description', '')
+        description = self.get_escaped_argument('description', '')
         enterCount = 0
         for c in description:
             if c == '\n':

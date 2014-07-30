@@ -67,9 +67,9 @@ class CreateHandler(BaseHandler):
     @tornado.web.authenticated
     @gen.coroutine
     def post(self):
-        node = self.get_argument("node", None)
-        title = self.get_argument('title', None)
-        content = self.get_argument('content', None)
+        node = self.get_escaped_argument("node", None)
+        title = self.get_escaped_argument('title', None)
+        content = self.get_escaped_argument('content', None)
         if not (node and title and content):
             self.send_message('请完整填写信息喵')
         if len(title) > 100:
@@ -115,7 +115,7 @@ class ReplyHandler(BaseHandler):
     @tornado.web.authenticated
     @gen.coroutine
     def post(self, topic_id):
-        content = self.get_argument('content', None)
+        content = self.get_escaped_argument('content', None)
         if not content:
             self.send_message('请完整填写信息喵')
         elif len(content) > 20000:
@@ -185,7 +185,7 @@ class AppendHandler(BaseHandler):
     @tornado.web.authenticated
     @gen.coroutine
     def post(self, topic_id):
-        content = self.get_argument('content', None)
+        content = self.get_escaped_argument('content', None)
         if not content:
             self.send_message('请完整填写信息喵')
         appended_content = yield self.async_db.topics.find_one({'_id': ObjectId(topic_id)})
