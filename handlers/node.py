@@ -2,9 +2,12 @@
 # -*- coding: utf-8 -*-
 
 import tornado.web
+import re
 from tornado import gen
 
 from . import BaseHandler
+
+nodename_validator = re.compile(r'^[A-Za-z][A-Za-z0-9._]{0,9}$')
 
 class NodeListHandler(BaseHandler):
     def get(self):
@@ -31,9 +34,9 @@ class AddHandler(BaseHandler):
     @gen.coroutine
     def post(self):
         self.check_role()
-        node_name = self.get_argument('node_name', None)
-        node_title = self.get_argument('node_title', None)
-        description = self.get_argument('description', '')
+        node_name = self.get_escaped_argument('node_name', None)
+        node_title = self.get_escaped_argument('node_title', None)
+        description = self.get_escaped_argument('description', '')
         html = self.get_argument('html', '')
         if not node_title:
             node_title = node_name
@@ -43,6 +46,8 @@ class AddHandler(BaseHandler):
             self.send_message('该节点已存在！')
         if self.db.nodes.find_one({'title': node_title}):
             self.send_message('节点标题有冲突！')
+        if not nodename_validator.match(node_name):
+            self.send_message('节点名要正常点！')
         if self.messages:
             self.render('node/add.html')
             return
@@ -68,9 +73,9 @@ class EditHandler(BaseHandler):
     def post(self, node_name):
         self.check_role()
         node = self.get_node(node_name)
-        node_name = self.get_argument('node_name', None)
-        node_title = self.get_argument('node_title', None)
-        description = self.get_argument('description', '')
+        node_name = self.get_escaped_argument('node_name', None)
+        node_title = self.get_escaped_argument('node_title', None)
+        description = self.get_escaped_argument('description', '')
         html = self.get_argument('html', '')
         if not node_name:
             self.send_message('请完整填写信息喵')
