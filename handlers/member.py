@@ -18,7 +18,6 @@ class MemberListHandler(BaseHandler):
                     count=count, p=p)
 
 class MemberPageHandler(BaseHandler):
-    @tornado.web.authenticated
     def get(self, name):
         member = self.get_user(name)
         topics = self.db.topics.find({'author': member['name']},
@@ -48,7 +47,6 @@ class FavoriteHandler(BaseHandler):
                     topics=topics, topics_count=topics_count, p=p, base_url = "/member/%s/favorite" % member['name'])
 
 class MemberTopicsHandler(BaseHandler):
-    @tornado.web.authenticated
     def get(self, name):
         member = self.get_user(name)
         topics = self.db.topics.find(
