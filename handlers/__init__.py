@@ -12,6 +12,7 @@ import qiniu.io
 import qiniu.rs
 import qiniu.rsf
 import tornado.web
+from tornado.escape import xhtml_escape, _unicode, _URL_RE
 from bson.objectid import ObjectId
 from settings import qiniu_bucket_name as bucket_name
 
@@ -197,3 +198,7 @@ class BaseHandler(tornado.web.RequestHandler):
                 'read': False,
                 'created': time.time(),
             })
+
+    def get_escaped_argument(self, argument, default):
+        text = self.get_argument(argument, default)
+        return xhtml_escape(text)
