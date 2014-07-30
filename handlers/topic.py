@@ -10,10 +10,23 @@ from bson.objectid import ObjectId
 from . import BaseHandler
 from .utils import make_content
 
-class TopicListHandler(BaseHandler):
+class HomeHandler(BaseHandler):
     def get(self):
         if not self.current_user:
             self.render('home.html')
+            return
+        topics = self.db.topics.find(sort=[('last_reply_time', -1)])
+        topics_count = topics.count()
+        p = int(self.get_argument('p', 1))
+        self.render(
+            'topic/list.html',
+            topics = topics,
+            topics_count = topics_count,
+            p = p,
+        )
+
+class TopicListHandler(BaseHandler):
+    def get(self):
         topics = self.db.topics.find(sort=[('last_reply_time', -1)])
         topics_count = topics.count()
         p = int(self.get_argument('p', 1))
@@ -227,7 +240,7 @@ class MoveHandler(BaseHandler):
         self.redirect('/topic/%s' % topic_id)
 
 handlers = [
-    (r'/', TopicListHandler),
+    (r'/', HomeHandler),
     (r'/topic', TopicListHandler),
     (r'/topic/create', CreateHandler),
     (r'/topic/(\w+)', TopicHandler),
