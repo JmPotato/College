@@ -22,7 +22,7 @@
     {% end %}
 </div>
 
-{% if current_user['name'] == member['name'] %}
+{% if (current_user and current_user['name'] == member['name']) %}
 {% if liked_topics %}
 <div class="box">
     <header>收藏</header>
@@ -108,7 +108,7 @@
 {% end %}
 
 {% block sidebar %}
-{% if current_user and current_user['role'] > member['role'] %}
+{% if (current_user and current_user['role'] > member['role']) %}
 <div class="box">
     <header>操作</header>
     {% if handler.check_role(return_bool=True) %}
